@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio | The Universe</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,900;1,400;1,900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Three.js Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Planet 2D Labels -->
+    <div id="labels-container"></div>
+
+    <!-- UI Overlay container (hidden by default, shown when visiting a planet) -->
+    <div id="ui-container" class="hidden">
+        <button id="back-btn" class="glass-btn">← Back to Galaxy</button>
+
+        <div id="content-panel" class="glass-panel">
+            <h1 id="panel-title">Title</h1>
+            <div id="panel-body">Content goes here...</div>
+        </div>
+    </div>
+
+    <!-- Main Hero Overlay (always on until interacting) -->
+    <div id="hero-overlay">
+        <div class="hero-content">
+            <h1>Hello, I'm <span class="highlight">ALISH</span></h1>
+            <h3>अलिश|અલિશ</h3>
+            <div class="noble-meaning">
+                <span class="noble-badge">Meaning: Noble</span>
+                <p class="noble-insight">“a polymathic seeker of elegance in complexity—from the laws of logic and
+                    chemistry to the pulse of hardware. Whether on the field or in the lab, I am a perpetual student of
+                    the game, mastering new worlds through play and relentless curiosity.”( A better Explanation for
+                    this is in about section 😜🫢</p>
+
+            </div>
+            <p>Welcome to my universe. Click on a planet to explore.</p>
+            <p class="hint">Scroll or drag to rotate the galaxy.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Three.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- Post-Processing (Bloom) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Main Application -->
+    <script src="main.js"></script>
+</body>
+
+</html>
