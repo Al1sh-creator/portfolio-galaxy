@@ -308,18 +308,22 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-window.addEventListener('touchstart', (event) => {
-    if (event.touches.length > 0) {
-        mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-    }
-}, { passive: true });
+let touchStartX = 0;
+let touchStartY = 0;
 
-window.addEventListener('click', (event) => {
-    if (event.clientX !== undefined) {
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
+window.addEventListener('pointerdown', (event) => {
+    touchStartX = event.clientX;
+    touchStartY = event.clientY;
+});
+
+window.addEventListener('pointerup', (event) => {
+    // Ignore if it was a drag/swipe instead of a tap
+    const dx = event.clientX - touchStartX;
+    const dy = event.clientY - touchStartY;
+    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) return;
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
 
