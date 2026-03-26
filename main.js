@@ -380,7 +380,7 @@ function flyToPlanet(planet) {
                 warpOverlay.style.opacity = '1';
                 setTimeout(() => {
                     const isLocal = window.location.hostname === 'localhost';
-                    window.location.href = isLocal ? 'http://localhost:3001' : '/projects'; // Link to Projects Vault
+                    window.location.href = isLocal ? 'http://localhost:3001' : 'https://projects-red-phi.vercel.app/'; // Link to Projects Vault
                 }, 1000);
             }
         });
@@ -417,7 +417,7 @@ function flyToPlanet(planet) {
                 warpOverlay.style.opacity = '1';
                 setTimeout(() => {
                     const isLocal = window.location.hostname === 'localhost';
-                    window.location.href = isLocal ? 'http://localhost:3000' : '/blog'; // Link to Next.js Blog
+                    window.location.href = isLocal ? 'http://localhost:3000' : 'https://blog-six-beta-13.vercel.app/'; // Link to Next.js Blog
                 }, 1000);
             }
         });
