@@ -308,8 +308,18 @@ window.addEventListener('mousemove', (event) => {
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-window.addEventListener('click', () => {
-    if (isExploring) return; // Prevent clicking planets while panel is open
+window.addEventListener('touchstart', (event) => {
+    if (event.touches.length > 0) {
+        mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+    }
+}, { passive: true });
+
+window.addEventListener('click', (event) => {
+    if (event.clientX !== undefined) {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
 
     raycaster.setFromCamera(mouse, camera);
 
