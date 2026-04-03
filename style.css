@@ -1,175 +1,588 @@
+/* ========================================================================
+   PORTFOLIO GALAXY — PREMIUM DESIGN SYSTEM
+   ======================================================================== */
+
+/* --- DESIGN TOKENS --- */
 :root {
+    /* Core Palette */
+    --bg-void: #030108;
     --bg-dark: #050510;
-    --text-light: #f0f0f0;
-    --accent-glow: rgba(0, 255, 255, 0.6);
-    --glass-bg: rgba(10, 15, 30, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-primary: #f0eef5;
+    --text-secondary: rgba(240, 238, 245, 0.55);
+    --text-muted: rgba(240, 238, 245, 0.3);
+
+    /* Accent Colors */
+    --accent-cyan: #00e5ff;
+    --accent-cyan-glow: rgba(0, 229, 255, 0.5);
+    --accent-gold: #f5a623;
+    --accent-gold-glow: rgba(245, 166, 35, 0.4);
+    --accent-purple: #a855f7;
+    --accent-purple-glow: rgba(168, 85, 247, 0.35);
+    --accent-rose: #f43f5e;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(8, 10, 25, 0.65);
+    --glass-bg-heavy: rgba(8, 10, 25, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-hover: rgba(255, 255, 255, 0.18);
+    --glass-blur: 20px;
+
+    /* Sizing */
+    --nav-height: 60px;
+    --hero-name-size: clamp(3.5rem, 10vw, 7rem);
 }
 
-* {
+/* --- RESET --- */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-light);
-    font-family: 'Outfit', sans-serif;
-    overflow: hidden; /* Prevent scrolling, Three.js handles it */
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+body {
+    background-color: var(--bg-void);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    cursor: none;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* --- CANVAS --- */
 #bg-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1;
+    z-index: 0;
 }
 
+/* ========================================================================
+   LOADING SCREEN
+   ======================================================================== */
+#loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg-void);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+                visibility 1.2s;
+}
+
+#loading-screen.loaded {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 6vw, 4rem);
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-gold));
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+}
+
+.loader-ring {
+    width: 80px;
+    height: 80px;
+    margin-top: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    border-top-color: var(--accent-cyan);
+    border-right-color: var(--accent-purple);
+    animation: spin 1.2s linear infinite;
+}
+
+.loader-status {
+    margin-top: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* Loading CSS Stars */
+.loader-stars {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.loader-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.8); }
+    100% { opacity: 0.9; transform: scale(1.2); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ========================================================================
+   CUSTOM CURSOR
+   ======================================================================== */
+#cursor-glow {
+    position: fixed;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, opacity 0.2s;
+    background: radial-gradient(circle,
+        rgba(0, 229, 255, 0.35) 0%,
+        rgba(0, 229, 255, 0.08) 50%,
+        transparent 70%
+    );
+    mix-blend-mode: screen;
+}
+
+#cursor-glow.hovering {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle,
+        rgba(0, 229, 255, 0.5) 0%,
+        rgba(168, 85, 247, 0.15) 50%,
+        transparent 70%
+    );
+}
+
+#cursor-dot {
+    position: fixed;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    pointer-events: none;
+    z-index: 10001;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 6px var(--accent-cyan-glow);
+}
+
+/* ========================================================================
+   PLANET LABELS
+   ======================================================================== */
 #labels-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none; /* Let clicks pass through */
+    pointer-events: none;
     z-index: 5;
     overflow: hidden;
 }
 
 .planet-label {
     position: absolute;
-    background: rgba(10, 15, 30, 0.9);
-    border: 1px solid rgba(0, 255, 255, 0.3);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 2px;
+    background: var(--glass-bg);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: var(--text-primary);
+    padding: 5px 14px;
+    border-radius: 4px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 400;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     transform: translate(-50%, -50%);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition: opacity 0.3s, transform 0.1s;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    white-space: nowrap;
 }
 
 .planet-label.hidden {
     opacity: 0;
 }
 
-/* Typography */
-h1 { 
+/* ========================================================================
+   TYPOGRAPHY
+   ======================================================================== */
+h1 {
     font-family: 'Playfair Display', serif;
-    font-weight: 900; 
-    font-size: 5rem; 
-    letter-spacing: -2px; 
+    font-weight: 900;
+    font-size: var(--hero-name-size);
+    letter-spacing: -3px;
     line-height: 0.9;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
-h2 { 
+
+h2 {
     font-family: 'Space Mono', monospace;
-    font-weight: 400; 
-    font-size: 1.1rem; 
-    color: rgba(255, 255, 255, 0.3); 
-    margin-top: 20px;
+    font-weight: 400;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-top: 16px;
     letter-spacing: 3px;
     text-transform: uppercase;
 }
+
 h3 {
     font-family: 'Space Mono', monospace;
-    font-size: 1.2rem;
-    color: #ffd700;
-    margin: 10px 0;
+    font-size: 1.1rem;
+    color: var(--accent-gold);
+    margin: 8px 0;
     font-weight: 400;
 }
-p { font-weight: 300; line-height: 1.6; }
-.highlight { 
-    font-style: italic;
-    color: #0ff; 
-    text-shadow: 0 0 15px var(--accent-glow); 
+
+p {
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-secondary);
 }
 
-/* Noble Meaning Section */
+/* ========================================================================
+   HERO OVERLAY — CINEMATIC
+   ======================================================================== */
+#hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+    padding-left: clamp(30px, 6vw, 80px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#hero-overlay.hidden {
+    opacity: 0;
+    transform: translateX(-30px);
+    pointer-events: none;
+}
+
+.hero-content {
+    max-width: 600px;
+    position: relative;
+}
+
+/* Gradient Name */
+.hero-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: var(--hero-name-size);
+    letter-spacing: -3px;
+    line-height: 0.9;
+    margin-bottom: 4px;
+    opacity: 0;
+}
+
+.hero-name .letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(40px) rotateX(-40deg);
+    transition: none; /* GSAP handles this */
+}
+
+.hero-greeting {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    opacity: 0;
+    transform: translateY(15px);
+}
+
+.highlight-name {
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite;
+    text-shadow: none;
+}
+
+/* Script names */
+.hero-scripts {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent-gold);
+    opacity: 0;
+    transform: translateY(15px);
+    margin-bottom: 16px;
+}
+
+/* Typewriter Role */
+.hero-role {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent-cyan);
+    min-height: 1.8em;
+    opacity: 0;
+    transform: translateY(15px);
+    margin-bottom: 24px;
+}
+
+.hero-role .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--accent-cyan);
+    margin-left: 3px;
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Noble Meaning */
 .noble-meaning {
-    margin: 25px 0 35px 20px;
+    margin: 0 0 30px 0;
     pointer-events: none;
     position: relative;
+    opacity: 0;
+    transform: translateY(20px);
 }
 
 .noble-badge {
     display: inline-block;
     font-family: 'Space Mono', monospace;
-    background: rgba(0, 255, 255, 0.05);
-    color: rgba(0, 255, 255, 0.6);
-    padding: 2px 10px;
-    border-radius: 4px;
-    font-size: 0.65rem;
+    background: rgba(168, 85, 247, 0.08);
+    color: var(--accent-purple);
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.6rem;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 1px solid rgba(0, 255, 255, 0.1);
-    margin-bottom: 15px;
+    letter-spacing: 1.5px;
+    border: 1px solid rgba(168, 85, 247, 0.15);
+    margin-bottom: 14px;
 }
 
 .noble-insight {
     font-family: 'Playfair Display', serif;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1.2rem;
-    max-width: 550px;
-    line-height: 1.5;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    padding-left: 25px;
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    max-width: 520px;
+    line-height: 1.6;
+    border-left: 2px solid rgba(168, 85, 247, 0.2);
+    padding-left: 20px;
     position: relative;
 }
 
 .noble-insight::before {
     content: '"';
     position: absolute;
-    left: 10px;
-    top: -10px;
-    font-size: 3rem;
-    color: rgba(0, 255, 255, 0.2);
+    left: 6px;
+    top: -12px;
+    font-size: 2.5rem;
+    color: rgba(168, 85, 247, 0.2);
     font-family: 'Playfair Display', serif;
 }
 
-/* Main Hero Overlay */
-#hero-overlay {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    pointer-events: none; /* Let clicks pass through by default */
-    z-index: 10;
-    opacity: 1;
-    max-width: 450px;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+/* Social Links */
+.hero-socials {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    opacity: 0;
+    transform: translateY(15px);
+    pointer-events: auto;
 }
 
-#hero-overlay.hidden {
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    cursor: pointer;
+}
+
+.social-link:hover {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 229, 255, 0.08);
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 25px rgba(0, 229, 255, 0.2);
+}
+
+.social-link svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-secondary);
+    transition: fill 0.3s;
+}
+
+.social-link:hover svg {
+    fill: var(--accent-cyan);
+}
+
+/* Interact Cue */
+.hero-cue {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateY(15px);
+}
+
+.cue-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.cue-chevron {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    animation: bounceDown 2s ease-in-out infinite;
+}
+
+.cue-chevron span {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: rotate(45deg);
+}
+
+.cue-chevron span:nth-child(2) {
+    opacity: 0.5;
+}
+
+@keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+}
+
+/* ========================================================================
+   FLOATING NAVIGATION BAR
+   ======================================================================== */
+#galaxy-nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: var(--glass-bg-heavy);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 0.6s;
+}
+
+#galaxy-nav.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+#galaxy-nav.nav-hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(80px);
     pointer-events: none;
 }
 
-.hint {
-    margin-top: 30px;
-    font-size: 0.9rem;
-    color: #888;
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    animation: pulse 2s infinite;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    white-space: nowrap;
+    pointer-events: auto;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+.nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--glass-border-hover);
 }
 
-/* Glassmorphism Panels (Planet Content) */
+.nav-item.active {
+    color: var(--accent-cyan);
+    background: rgba(0, 229, 255, 0.06);
+    border-color: rgba(0, 229, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.08);
+}
+
+.nav-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+/* ========================================================================
+   UI CONTAINER — GLASS PANELS
+   ======================================================================== */
 #ui-container {
     position: absolute;
     top: 0;
@@ -182,7 +595,7 @@ p { font-weight: 300; line-height: 1.6; }
     align-items: center;
     z-index: 20;
     opacity: 1;
-    background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
+    background: radial-gradient(circle, transparent 20%, rgba(0, 0, 0, 0.85) 100%);
     transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
@@ -193,71 +606,192 @@ p { font-weight: 300; line-height: 1.6; }
 
 .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 40px;
-    width: 80%;
+    border-radius: 24px;
+    padding: 44px;
+    width: 85%;
     max-width: 800px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-    transform: translateY(20px);
-    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transform: translateY(30px);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 #ui-container:not(.hidden) .glass-panel {
     transform: translateY(0);
 }
 
-/* Back Button */
-#back-btn {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
 #panel-title {
     font-family: 'Playfair Display', serif;
     font-weight: 900;
-    font-size: 3rem;
-    margin-bottom: 20px;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-#back-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+/* Back Button */
+.glass-btn {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Planet specific content styling */
+.glass-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--glass-border-hover);
+    box-shadow: 0 4px 20px rgba(0, 229, 255, 0.1);
+    transform: translateX(-4px);
+}
+
+/* Planet Content Cards */
 .project-card, .skill-tag {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 18px;
+    border-radius: 14px;
     margin: 10px 0;
-    transition: background 0.3s;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .skill-tag {
     display: inline-block;
     margin: 5px;
-    padding: 8px 15px;
+    padding: 10px 18px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
 }
 
 .project-card:hover {
-    background: rgba(0, 255, 255, 0.1);
-    border-color: rgba(0, 255, 255, 0.4);
+    background: rgba(0, 229, 255, 0.05);
+    border-color: rgba(0, 229, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 229, 255, 0.08);
+}
+
+.skill-tag:hover {
+    background: rgba(168, 85, 247, 0.08);
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* ========================================================================
+   VIGNETTE OVERLAY
+   ======================================================================== */
+#vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 40%,
+        rgba(3, 1, 8, 0.5) 80%,
+        rgba(3, 1, 8, 0.85) 100%
+    );
+}
+
+/* ========================================================================
+   SCAN LINE (subtle CRT feel)
+   ======================================================================== */
+#scanline {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+    );
+    opacity: 0.3;
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+@media (max-width: 768px) {
+    body { cursor: auto; }
+    #cursor-glow, #cursor-dot { display: none; }
+
+    #hero-overlay {
+        padding-left: 24px;
+        padding-right: 24px;
+        align-items: flex-end;
+        padding-bottom: 120px;
+    }
+
+    .hero-content { max-width: 100%; }
+
+    .noble-insight {
+        font-size: 0.9rem;
+        max-width: 100%;
+    }
+
+    #galaxy-nav {
+        bottom: 12px;
+        padding: 4px 8px;
+        gap: 2px;
+        max-width: calc(100vw - 24px);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-item {
+        padding: 6px 10px;
+        font-size: 0.55rem;
+    }
+
+    .nav-label {
+        display: none;
+    }
+
+    .glass-panel {
+        width: 92%;
+        padding: 28px;
+        border-radius: 18px;
+    }
+
+    #panel-title {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --hero-name-size: 2.8rem;
+    }
+
+    .hero-scripts {
+        font-size: 0.85rem;
+    }
+
+    .hero-role {
+        font-size: 0.6rem;
+    }
+
+    #galaxy-nav {
+        border-radius: 20px;
+    }
 }

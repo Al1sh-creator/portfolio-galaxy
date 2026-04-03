@@ -4,8 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Portfolio | The Universe</title>
+    <title>ALISH — Creative Developer & 3D Web Engineer</title>
+    <meta name="description" content="Alish's portfolio — A polymathic seeker of elegance in complexity. Explore a 3D galaxy of projects, skills, and experiments.">
+    <meta name="theme-color" content="#030108">
+    <meta property="og:title" content="ALISH — Creative Developer Portfolio">
+    <meta property="og:description" content="A 3D galaxy portfolio showcasing creative development, WebGL, and interactive experiences.">
+    <meta property="og:type" content="website">
+
     <link rel="stylesheet" href="style.css">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,41 +22,120 @@
 </head>
 
 <body>
-    <!-- Three.js Canvas -->
+    <!-- ============ LOADING SCREEN ============ -->
+    <div id="loading-screen">
+        <div class="loader-stars" id="loader-stars"></div>
+        <div class="loader-name">ALISH</div>
+        <div class="loader-ring"></div>
+        <div class="loader-status" id="loader-status">Initializing universe...</div>
+    </div>
+
+    <!-- ============ CUSTOM CURSOR ============ -->
+    <div id="cursor-glow"></div>
+    <div id="cursor-dot"></div>
+
+    <!-- ============ VIGNETTE + SCANLINE ============ -->
+    <div id="vignette"></div>
+    <div id="scanline"></div>
+
+    <!-- ============ THREE.JS CANVAS ============ -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Planet 2D Labels -->
+    <!-- ============ PLANET LABELS ============ -->
     <div id="labels-container"></div>
 
-    <!-- UI Overlay container (hidden by default, shown when visiting a planet) -->
+    <!-- ============ HERO OVERLAY ============ -->
+    <div id="hero-overlay">
+        <div class="hero-content">
+            <p class="hero-greeting">Hello, I'm</p>
+            <h1 class="hero-name" id="hero-name">
+                <span class="highlight-name">ALISH</span>
+            </h1>
+            <p class="hero-scripts">अलिश | અલિશ</p>
+
+            <div class="hero-role" id="hero-role">
+                <span id="role-text"></span><span class="cursor-blink"></span>
+            </div>
+
+            <div class="noble-meaning">
+                <span class="noble-badge">Meaning: Noble</span>
+                <p class="noble-insight">"A polymathic seeker of elegance in complexity—from the laws of
+                    logic and chemistry to the pulse of hardware. Whether on the field or in the lab, I am a
+                    perpetual student of the game, mastering new worlds through play and relentless curiosity."</p>
+            </div>
+
+            <div class="hero-socials" id="hero-socials">
+                <a href="https://github.com/Al1sh-creator" target="_blank" rel="noopener" class="social-link"
+                    aria-label="GitHub" id="social-github">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 17.07 3.633 16.7 3.633 16.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
+                </a>
+                <a href="https://linkedin.com/in/" target="_blank" rel="noopener" class="social-link"
+                    aria-label="LinkedIn" id="social-linkedin">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                </a>
+                <a href="https://twitter.com/" target="_blank" rel="noopener" class="social-link"
+                    aria-label="Twitter/X" id="social-twitter">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="hero-cue" id="hero-cue">
+                <span class="cue-text">Explore the galaxy</span>
+                <div class="cue-chevron">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ FLOATING NAVIGATION ============ -->
+    <nav id="galaxy-nav">
+        <button class="nav-item" data-planet="about" id="nav-about">
+            <span class="nav-icon">🧑‍🚀</span>
+            <span class="nav-label">About</span>
+        </button>
+        <button class="nav-item" data-planet="skills" id="nav-skills">
+            <span class="nav-icon">⚡</span>
+            <span class="nav-label">Skills</span>
+        </button>
+        <button class="nav-item" data-planet="projects" id="nav-projects">
+            <span class="nav-icon">🚀</span>
+            <span class="nav-label">Projects</span>
+        </button>
+        <button class="nav-item" data-planet="blog" id="nav-blog">
+            <span class="nav-icon">📝</span>
+            <span class="nav-label">Blog</span>
+        </button>
+        <button class="nav-item" data-planet="experience" id="nav-experience">
+            <span class="nav-icon">💼</span>
+            <span class="nav-label">Experience</span>
+        </button>
+        <button class="nav-item" data-planet="contact" id="nav-contact">
+            <span class="nav-icon">📡</span>
+            <span class="nav-label">Contact</span>
+        </button>
+    </nav>
+
+    <!-- ============ UI CONTAINER (Planet Content) ============ -->
     <div id="ui-container" class="hidden">
         <button id="back-btn" class="glass-btn">← Back to Galaxy</button>
-
         <div id="content-panel" class="glass-panel">
             <h1 id="panel-title">Title</h1>
             <div id="panel-body">Content goes here...</div>
         </div>
     </div>
 
-    <!-- Main Hero Overlay (always on until interacting) -->
-    <div id="hero-overlay">
-        <div class="hero-content">
-            <h1>Hello, I'm <span class="highlight">ALISH</span></h1>
-            <h3>अलिश|અલિશ</h3>
-            <div class="noble-meaning">
-                <span class="noble-badge">Meaning: Noble</span>
-                <p class="noble-insight">“a polymathic seeker of elegance in complexity—from the laws of logic and
-                    chemistry to the pulse of hardware. Whether on the field or in the lab, I am a perpetual student of
-                    the game, mastering new worlds through play and relentless curiosity.”( A better Explanation for
-                    this is in about section 😜🫢</p>
-
-            </div>
-            <p>Welcome to my universe. Click on a planet to explore.</p>
-            <p class="hint">Scroll or drag to rotate the galaxy.</p>
-        </div>
-    </div>
-
-    <!-- Scripts -->
+    <!-- ============ SCRIPTS ============ -->
     <!-- Three.js Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- OrbitControls -->
