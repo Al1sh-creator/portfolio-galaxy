@@ -332,8 +332,9 @@ for (let i = 0; i < 5; i++) createShootingStar();
 const planetData = {
     about: {
         model: 'assets/robot.glb', modelScale: 0.8, size: 2.5, distance: 15, speed: 0.005, angle: 0,
-        title: 'The Explorer (About)',
-        html: '<p>I am a creative developer charting the unknown regions of the web. My primary mission is to build highly immersive, interactive experiences.</p><br><p><strong>Status:</strong> Orbiting the Milky Way.</p>'
+        id: 'about',
+        title: 'The Arcane Laboratory (About Me)',
+        html: '<p>Warping to the Arcane Laboratory...</p>'
     },
     skills: {
         texture: textures.jupiter, size: 3.5, distance: 25, speed: 0.003, angle: Math.PI / 3,
@@ -640,6 +641,25 @@ function flyToPlanet(planet) {
 
     heroOverlay.classList.add('hidden');
     galaxyNav.classList.add('nav-hidden');
+
+    // --- WARP TO ABOUT (Arcane Laboratory) ---
+    if (planet.userData.id === 'about') {
+        const warpOverlay = document.createElement('div');
+        warpOverlay.style.cssText = 'position:fixed;inset:0;background:#fff;opacity:0;z-index:9999;pointer-events:none;transition:opacity 1s ease-in;';
+        document.body.appendChild(warpOverlay);
+        gsap.to(camera.position, {
+            x: targetPos.x, y: targetPos.y, z: targetPos.z - 2, duration: 1.5, ease: 'power3.in',
+            onUpdate: () => camera.lookAt(planet.position),
+            onComplete: () => {
+                warpOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    const isLocal = window.location.hostname === 'localhost';
+                    window.location.href = isLocal ? 'http://localhost:3002' : 'https://alish-explorer.vercel.app/';
+                }, 1000);
+            }
+        });
+        return;
+    }
 
     // --- WARP TO PROJECTS ---
     if (planet.userData.title === 'Missions Database (Projects)') {
