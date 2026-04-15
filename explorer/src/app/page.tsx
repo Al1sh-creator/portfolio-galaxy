@@ -215,13 +215,40 @@ export default function Home() {
       
       {/* 1. Cinematic Preloader */}
       <AnimatePresence>
-         {loading && <Preloader onComplete={() => window.scrollTo(0, 0) || setLoading(false)} />}
+         {loading && <Preloader onComplete={() => { window.scrollTo(0, 0); setLoading(false); }} />}
       </AnimatePresence>
 
       {/* 2. Magnetic Cursor */}
       {!loading && <CustomCursor />}
 
       <Fireflies />
+      
+      {/* 3. Navigation Bridge */}
+      <nav className="fixed top-0 w-full z-[100] px-8 py-8 mix-blend-difference pointer-events-none">
+         <div className="max-w-7xl mx-auto flex justify-between items-center pointer-events-auto">
+            <a 
+               href="https://portfolio-galaxy-five.vercel.app/" 
+               className="group flex flex-col gap-1 text-[var(--color-primary-container)]/50 hover:text-[var(--color-secondary)] transition-all duration-500 font-sans"
+            >
+               <span className="text-[10px] tracking-[0.3em] uppercase opacity-40">Return to</span>
+               <div className="flex items-center gap-2">
+                  <motion.div
+                     whileHover={{ x: -4 }}
+                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                     <Code2 className="w-4 h-4 rotate-180" />
+                  </motion.div>
+                  <span className="text-sm font-bold tracking-widest uppercase italic">The Cosmos</span>
+               </div>
+            </a>
+            
+            <div className="hidden md:flex flex-col items-end opacity-40">
+               <span className="text-[10px] tracking-[0.3em] uppercase mb-1">Sector</span>
+               <span className="text-xs font-serif italic text-[var(--color-secondary)]">Arcane Laboratory</span>
+            </div>
+         </div>
+      </nav>
+
       <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vh] light-leak pointer-events-none z-10" />
 
       {/* --- HERO DIVING SECTION --- */}
