@@ -333,7 +333,7 @@ const planetData = {
     about: {
         model: 'assets/robot.glb', modelScale: 0.8, size: 2.5, distance: 15, speed: 0.005, angle: 0,
         id: 'about',
-        title: 'The Arcane Laboratory (About Me)',
+        title: 'The Astronaut (About Me)',
         html: '<p>Warping to the Arcane Laboratory...</p>'
     },
     skills: {
