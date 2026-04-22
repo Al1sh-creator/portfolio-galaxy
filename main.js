@@ -654,7 +654,7 @@ function flyToPlanet(planet) {
                 warpOverlay.style.opacity = '1';
                 setTimeout(() => {
                     const isLocal = window.location.hostname === 'localhost';
-                    window.location.href = isLocal ? 'http://localhost:3002' : 'https://alish-explorer.vercel.app/';
+                    window.location.href = isLocal ? 'http://localhost:3003' : 'https://about-alish.vercel.app/';
                 }, 1000);
             }
         });
