@@ -1,96 +1,80 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #f0e6d2; /* Light cream/gold text */
-  --color-secondary: #00e5ff; /* Cyan accent */
-  --color-accent: #ccff00; /* Neon yellow accent */
-  --color-background: #030108; /* Deep space black */
-  --color-surface: rgba(20, 15, 30, 0.6); /* Glassmorphism surface */
-
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Space Mono", monospace;
+  --color-primary: #ffbca3;      /* Soft Peach */
+  --color-primary-container: #ff9e9a; /* Sunset Pink */
+  --color-secondary: #ffe58f;    /* Golden Hour */
+  --color-secondary-container: #ffd599; /* Warm Gold */
+  --color-surface: #fdfae7;
+  
+  --color-on-surface: #2a1f28;   /* Deep Twilight Purple for text contrast */
+  --color-accent: #ff9e9a;
+  
+  --font-serif: "Lora", serif;
+  --font-sans: "Nunito", sans-serif;
 }
 
-/* Base Adjustments */
-body {
-  background-color: var(--color-background);
-  color: var(--color-primary);
-  font-family: var(--font-sans);
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  body {
+    @apply bg-[#2a1f28] text-[#fdfae7] font-sans antialiased overflow-x-hidden cursor-none;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+  
+  /* Disable default pointer cursor globally since we have a custom cursor */
+  a, button, [role="button"], input, select, textarea {
+    cursor: none !important;
+  }
 }
 
-/* Glassmorphism Panel */
-.glass-panel {
-  background: var(--color-surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  border-radius: 1.5rem;
+@layer utilities {
+  .ghibli-glass {
+    @apply bg-[#3d2f3a]/80 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden;
+  }
+  
+  .ghibli-gradient-text {
+    @apply bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-container)] bg-clip-text text-transparent;
+  }
+
+  .ghibli-button {
+    @apply relative overflow-hidden rounded-full bg-gradient-to-r from-[var(--color-primary-container)] to-[var(--color-secondary)] px-10 py-4 text-[#2a1f28] font-bold tracking-widest uppercase transition-transform hover:-translate-y-1;
+  }
+  
+  .light-leak {
+    background: radial-gradient(circle, rgba(255,158,154,0.1) 0%, transparent 70%);
+  }
+
+  .animate-breathe {
+    animation: text-breath 6s ease-in-out infinite alternate;
+  }
 }
 
-/* Ambient glow effects */
-.ambient-glow {
+@keyframes text-breath {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+.firefly {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  z-index: 0;
-  opacity: 0.4;
-  pointer-events: none;
+  background: var(--color-secondary);
+  box-shadow: 0 0 10px rgba(255,229,143,0.5);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: float-gently linear infinite;
 }
 
-/* Floating Animation */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes float-gently {
+  0% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }
+  20% { opacity: 0.4; }
+  80% { opacity: 0.4; }
+  100% { transform: translate3d(0, -20vh, 0) scale(1.5); opacity: 0; }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-background);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Micro-interactions */
-.nav-link {
-  position: relative;
-  transition: color 0.3s ease;
-}
-.nav-link::after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 1px;
-  bottom: -4px;
-  left: 0;
-  background-color: var(--color-secondary);
-  transform-origin: bottom right;
-  transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
-}
-.nav-link:hover {
-  color: var(--color-secondary);
-}
-.nav-link:hover::after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }

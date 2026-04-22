@@ -1,154 +1,405 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Code2, ArrowLeft, User, Sparkles, Terminal, Compass } from "lucide-react";
-import Head from "next/head";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
+import Lenis from "lenis";
+import { Feather, Code2, Sparkles, Sprout, CloudRain } from "lucide-react";
 
-export default function AboutPage() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isLoaded, setIsLoaded] = useState(false);
+// --- HOOKS & SFX ---
+const playCrystalChime = () => {
+   try {
+     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+     if (!AudioContext) return;
+     const ctx = new AudioContext();
+     const osc = ctx.createOscillator();
+     const gain = ctx.createGain();
+     osc.type = "sine";
+     const basePitch = 1200 + Math.random() * 400;
+     osc.frequency.setValueAtTime(basePitch, ctx.currentTime);
+     gain.gain.setValueAtTime(0, ctx.currentTime);
+     gain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.1);
+     gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.0);
+     osc.connect(gain);
+     gain.connect(ctx.destination);
+     osc.start();
+     osc.stop(ctx.currentTime + 2.0);
+   } catch (e) {}
+};
 
+const Fireflies = () => {
+   const [particles, setParticles] = useState<any[]>([]);
+   useEffect(() => {
+     const p = Array.from({ length: 15 }).map((_, i) => ({
+       id: i,
+       left: Math.random() * 100 + "vw",
+       size: Math.random() * 3 + 1 + "px",
+       duration: Math.random() * 10 + 8 + "s",
+       delay: Math.random() * 8 + "s",
+     }));
+     setParticles(p);
+   }, []);
+   return (
+     <div className="fixed inset-0 pointer-events-none z-[40] overflow-hidden">
+       {particles.map((p) => (
+         <div 
+           key={p.id} className="firefly"
+           style={{ left: p.left, width: p.size, height: p.size, animationDuration: p.duration, animationDelay: p.delay }}
+         />
+       ))}
+     </div>
+   );
+}
+
+// --- COMPONENTS ---
+
+const Preloader = ({ onComplete }: { onComplete: () => void }) => {
+   const [count, setCount] = useState(0);
+
+   useEffect(() => {
+      const interval = setInterval(() => {
+         setCount(prev => {
+            if (prev >= 100) {
+               clearInterval(interval);
+               setTimeout(onComplete, 800);
+               return 100;
+            }
+            return prev + Math.floor(Math.random() * 10) + 1;
+         });
+      }, 50);
+      return () => clearInterval(interval);
+   }, [onComplete]);
+
+   return (
+      <motion.div 
+         initial={{ opacity: 1 }}
+         exit={{ opacity: 0, transition: { duration: 1.5, ease: "easeInOut" } }}
+         className="fixed inset-0 z-[200] bg-[#1a1419] flex items-center justify-center pointer-events-none"
+      >
+         <div className="text-center">
+            <motion.div 
+               initial={{ scale: 0.9, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               className="text-[var(--color-primary)] text-sm tracking-[0.5em] uppercase mb-4"
+            >
+               Initializing
+            </motion.div>
+            <div className="text-6xl md:text-8xl font-serif text-[#fdfae7] font-light">
+               <span className="tabular-nums">{Math.min(100, count)}</span><span className="text-[var(--color-secondary)]">%</span>
+            </div>
+         </div>
+         {/* Split screens */}
+         <motion.div 
+            initial={{ height: "50%" }}
+            exit={{ height: "0%", transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] } }}
+            className="absolute top-0 left-0 w-full bg-[#2a1f28] z-[-1]"
+         />
+         <motion.div 
+            initial={{ height: "50%" }}
+            exit={{ height: "0%", transition: { duration: 1.5, ease: [0.76, 0, 0.24, 1] } }}
+            className="absolute bottom-0 left-0 w-full bg-[#2a1f28] z-[-1]"
+         />
+      </motion.div>
+   );
+};
+
+const CustomCursor = () => {
+   const mouseX = useMotionValue(-100);
+   const mouseY = useMotionValue(-100);
+   
+   const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+   const springX = useSpring(mouseX, springConfig);
+   const springY = useSpring(mouseY, springConfig);
+
+   const [isHovering, setIsHovering] = useState(false);
+
+   useEffect(() => {
+      const moveCursor = (e: MouseEvent) => {
+         mouseX.set(e.clientX - 12);
+         mouseY.set(e.clientY - 12);
+      };
+      
+      const handleMouseOver = (e: MouseEvent) => {
+         const target = e.target as HTMLElement;
+         // Check if hovering over clickable or interactive element
+         if (target.closest('button') || target.closest('.group') || target.tagName.toLowerCase() === 'a') {
+            setIsHovering(true);
+         } else {
+            setIsHovering(false);
+         }
+      };
+
+      window.addEventListener("mousemove", moveCursor);
+      window.addEventListener("mouseover", handleMouseOver);
+      return () => {
+         window.removeEventListener("mousemove", moveCursor);
+         window.removeEventListener("mouseover", handleMouseOver);
+      };
+   }, [mouseX, mouseY]);
+
+   return (
+      <motion.div 
+         className="fixed top-0 left-0 z-[1000] pointer-events-none mix-blend-screen flex items-center justify-center rounded-full"
+         style={{ x: springX, y: springY }}
+      >
+         <motion.div 
+            animate={{ 
+               width: isHovering ? 60 : 24, 
+               height: isHovering ? 60 : 24,
+               backgroundColor: isHovering ? "transparent" : "var(--color-secondary)",
+               border: isHovering ? "1px solid var(--color-primary-container)" : "0px solid transparent",
+               opacity: isHovering ? 0.8 : 0.5,
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="rounded-full shadow-[0_0_15px_var(--color-secondary)] flex items-center justify-center transform -translate-x-1/2 -translate-y-1/2"
+         >
+            {isHovering && <span className="text-[10px] text-[var(--color-primary-container)] tracking-widest font-bold">VIEW</span>}
+         </motion.div>
+      </motion.div>
+   );
+};
+
+export default function Home() {
+  const [loading, setLoading] = useState(true);
+
+  // Smooth Scrolling
   useEffect(() => {
-    setIsLoaded(true);
+    if (loading) return; // Wait to init smooth scroll until after preloader
+    const lenis = new Lenis({
+      duration: 0.7,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+    });
+    function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
+  }, [loading]);
+
+  // Mouse Parallax Trackers
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
+       const x = (e.clientX / window.innerWidth - 0.5) * 40; // Max 20px shift
+       const y = (e.clientY / window.innerHeight - 0.5) * 40;
+       mouseX.set(x);
+       mouseY.set(y);
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    if (!loading) window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [loading, mouseX, mouseY]);
+
+  // Spring physics for smooth ambient parallax
+  const parallaxX = useSpring(mouseX, { stiffness: 40, damping: 20 });
+  const parallaxY = useSpring(mouseY, { stiffness: 40, damping: 20 });
+
+  const heroWrapperRef = useRef(null);
+  const timelineWrapperRef = useRef(null);
+  const skillsWrapperRef = useRef(null);
+
+  // SCROLL MAPS
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroWrapperRef, offset: ["start start", "end start"] });
+  const heroScale = useTransform(heroProgress, [0, 0.5, 0.9], [1, 2, 80]);
+  const heroTextOpacity = useTransform(heroProgress, [0, 0.3, 0.6], [1, 0.8, 0]);
+  const heroBgY = useTransform(heroProgress, [0, 1], ["0%", "20%"]);
+
+  const { scrollYProgress: timelineProgress } = useScroll({ target: timelineWrapperRef, offset: ["start start", "end end"] });
+  const timelineX = useTransform(timelineProgress, [0, 1], ["0%", "-35vw"]);
+  const creatureScrollY = useTransform(timelineProgress, [0, 1], ["0px", "-100px"]);
+
+  const { scrollYProgress: skillsProgress } = useScroll({ target: skillsWrapperRef, offset: ["start end", "start start"] });
+  const clipMaskSize = useTransform(skillsProgress, [0.1, 0.6], ["circle(0% at center)", "circle(150% at center)"]);
+  const libBgScale = useTransform(skillsProgress, [0, 1], [1.3, 1]);
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden font-sans bg-[#030108] text-[#f0e6d2]">
-      {/* Dynamic Background Glow */}
-      <div 
-        className="ambient-glow bg-[var(--color-secondary)] w-[600px] h-[600px] transition-transform duration-1000 ease-out"
-        style={{
-          transform: `translate(${mousePosition.x - 300}px, ${mousePosition.y - 300}px)`,
-          opacity: 0.15
-        }}
-      />
-      <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#ccff00]/10 rounded-full blur-[100px] pointer-events-none" />
+    <main className="relative bg-[#2a1f28] text-[#fdfae7] selection:bg-[var(--color-secondary)] selection:text-[#2a1f28] min-h-screen">
+      
+      {/* 1. Cinematic Preloader */}
+      <AnimatePresence>
+         {loading && <Preloader onComplete={() => { window.scrollTo(0, 0); setLoading(false); }} />}
+      </AnimatePresence>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-8 py-8 mix-blend-difference pointer-events-none">
-        <div className="max-w-7xl mx-auto flex justify-between items-center pointer-events-auto">
-          <a 
-            href="http://127.0.0.1:8080" 
-            className="group flex flex-col gap-1 text-[#f0e6d2]/50 hover:text-[var(--color-secondary)] transition-all duration-500"
-          >
-            <span className="text-[10px] tracking-[0.3em] uppercase opacity-40">Return to</span>
-            <div className="flex items-center gap-2">
-              <motion.div
-                whileHover={{ x: -4 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </motion.div>
-              <span className="text-sm font-bold tracking-widest uppercase italic">The Galaxy</span>
+      {/* 2. Magnetic Cursor */}
+      {!loading && <CustomCursor />}
+
+      <Fireflies />
+      
+      {/* 3. Navigation Bridge */}
+      <nav className="fixed top-0 w-full z-[100] px-8 py-8 mix-blend-difference pointer-events-none">
+         <div className="max-w-7xl mx-auto flex justify-between items-center pointer-events-auto">
+            <a 
+               href="https://portfolio-galaxy-five.vercel.app/" 
+               className="group flex flex-col gap-1 text-[var(--color-primary-container)]/50 hover:text-[var(--color-secondary)] transition-all duration-500 font-sans"
+            >
+               <span className="text-[10px] tracking-[0.3em] uppercase opacity-40">Return to</span>
+               <div className="flex items-center gap-2">
+                  <motion.div
+                     whileHover={{ x: -4 }}
+                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  >
+                     <Code2 className="w-4 h-4 rotate-180" />
+                  </motion.div>
+                  <span className="text-sm font-bold tracking-widest uppercase italic">The Cosmos</span>
+               </div>
+            </a>
+            
+            <div className="hidden md:flex flex-col items-end opacity-40">
+               <span className="text-[10px] tracking-[0.3em] uppercase mb-1">Sector</span>
+               <span className="text-xs font-serif italic text-[var(--color-secondary)]">Arcane Laboratory</span>
             </div>
-          </a>
-          
-          <div className="hidden md:flex flex-col items-end opacity-40">
-            <span className="text-[10px] tracking-[0.3em] uppercase mb-1">Sector</span>
-            <span className="text-xs font-serif italic text-white">About Me</span>
-          </div>
-        </div>
+         </div>
       </nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 min-h-screen flex flex-col xl:flex-row items-center xl:items-start gap-16">
-        
-        {/* Left Column: Hero Intro */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: isLoaded ? 1 : 0, x: isLoaded ? 0 : -50 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          className="flex-1 flex flex-col justify-center sticky top-32"
-        >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-[1px] bg-[var(--color-secondary)]" />
-            <span className="text-[var(--color-secondary)] tracking-[0.3em] uppercase text-sm font-bold">Identity Profile</span>
-          </div>
-          
-          <h1 className="text-6xl md:text-8xl font-serif font-light leading-tight mb-4">
-            Hello, I'm <br />
-            <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-200 to-gray-500">
-              ALISH
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-white/50 tracking-widest uppercase mb-8">
-            अलिश | અલિશ
-          </p>
+      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vh] light-leak pointer-events-none z-10" />
 
-          <div className="glass-panel p-8 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-              <User className="w-32 h-32" />
+      {/* --- HERO DIVING SECTION --- */}
+      <section ref={heroWrapperRef} className="relative w-full h-[150vh]">
+         {/* Mouse-bound background parallax added to hero container */}
+         <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">
+            
+            <motion.div style={{ y: heroBgY, x: parallaxX, willChange: 'transform' }} className="absolute inset-[-5%] z-0 w-[110%] h-[110%]">
+               <img src="/hero.png" alt="Hero" className="w-full h-full object-cover opacity-60 pointer-events-none" />
+               <div className="absolute inset-0 bg-gradient-to-b from-[#2a1f28]/60 via-transparent to-[#2a1f28]" />
+            </motion.div>
+
+            <motion.div 
+               style={{ scale: heroScale, opacity: heroTextOpacity, y: parallaxY, willChange: 'transform, opacity' }} 
+               className="relative z-20 flex flex-col items-center text-center transform-origin-center mt-[-10vh]"
+            >
+               <CloudRain className="w-10 h-10 mb-8 text-[var(--color-secondary)] mx-auto opacity-80" strokeWidth={1} />
+               <h1 className="text-6xl md:text-9xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-[#fdfae7] to-[var(--color-primary)] font-light tracking-wide animate-breathe leading-[0.9]">
+                 Arcane <br /> <span className="italic font-serif opacity-90">Laboratory</span>
+               </h1>
+               <p className="text-xl md:text-3xl font-light tracking-widest uppercase mt-12 opacity-80 mix-blend-screen">
+                  Scroll to Dive Deep
+               </p>
+            </motion.div>
+         </div>
+      </section>
+
+      {/* --- HORIZONTAL TIMELINE --- */}
+      <section ref={timelineWrapperRef} className="relative w-full h-[180vh] z-20">
+         <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center bg-[#211820]">
+            
+            <motion.div 
+              style={{ y: creatureScrollY, x: parallaxX, willChange: 'transform' }} 
+              className="absolute left-[10vw] top-[20vh] w-[400px] h-[500px] pointer-events-none opacity-30"
+            >
+               <img src="/creature.png" alt="Companion" className="w-full h-full object-cover rounded-[3rem]" />
+               <div className="absolute inset-0 bg-gradient-to-tr from-[#211820] to-transparent" />
+            </motion.div>
+
+            <motion.div 
+               style={{ x: timelineX, y: parallaxY, willChange: 'transform' }} 
+               className="flex items-center gap-16 md:gap-32 pl-[10vw] pr-[20vw] w-max z-20"
+            >
+               <div className="w-[300px] md:w-[400px] shrink-0">
+                  <h2 className="text-6xl md:text-7xl font-serif text-[var(--color-primary)] font-light mb-6">The Log</h2>
+                  <p className="text-[var(--color-secondary)]/70 text-2xl italic font-serif">A chronicle tracked in horizontal time.</p>
+                  <div className="w-full h-[1px] bg-[var(--color-primary)]/30 mt-12 flex items-center">
+                     <div className="w-4 h-4 bg-[var(--color-secondary)] rounded-full" />
+                  </div>
+               </div>
+
+               {/* Timeline Cards */}
+               <div onMouseEnter={playCrystalChime} className="ghibli-glass w-[350px] md:w-[450px] shrink-0 p-8 md:p-12 relative overflow-hidden group transition-transform duration-500 hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/0 to-[var(--color-primary)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <span className="text-[var(--color-secondary)] text-sm tracking-widest uppercase block mb-4">Chapter I</span>
+                  <h3 className="text-3xl md:text-4xl font-serif mb-6 text-[#fdfae7]">The Awakening</h3>
+                  <p className="text-[#fdfae7]/80 md:text-xl leading-relaxed md:leading-loose font-light">
+                    Every journey begins softly. Building worlds from nothing is an act of quiet magic. The logic of the web reveals itself through patience.
+                  </p>
+               </div>
+
+               <div onMouseEnter={playCrystalChime} className="ghibli-glass w-[350px] md:w-[450px] shrink-0 p-8 md:p-12 relative overflow-hidden group transition-transform duration-500 hover:-translate-y-2">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-secondary)]/0 to-[var(--color-secondary)]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <span className="text-[var(--color-primary-container)] text-sm tracking-widest uppercase block mb-4">Chapter II</span>
+                  <h3 className="text-3xl md:text-4xl font-serif mb-6 text-[#fdfae7]">Kinetic Interfaces</h3>
+                  <p className="text-[#fdfae7]/80 md:text-xl leading-relaxed md:leading-loose font-light">
+                    The interface breathes. The DOM becomes a canvas for kinetic motion, mapped horizontally to the viewer's command.
+                  </p>
+               </div>
+            </motion.div>
+         </div>
+      </section>
+
+      {/* --- MASK REVEAL SKILLS --- */}
+      <section ref={skillsWrapperRef} className="relative w-full h-[120vh]">
+         <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden">
+            
+            <motion.div 
+               style={{ clipPath: clipMaskSize, scale: libBgScale, x: parallaxX, y: parallaxY, willChange: 'transform, clip-path' }} 
+               className="absolute inset-[-5%] z-0 bg-[#2a1f28] w-[110%] h-[110%]"
+            >
+               <img src="/library.png" alt="Archive" className="w-full h-full object-cover opacity-30 pointer-events-none" />
+               <div className="absolute inset-0 bg-gradient-to-t from-[#2a1f28] to-transparent" />
+            </motion.div>
+
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 flex flex-col items-center pt-20">
+               <motion.h2 
+                 initial={{ opacity: 0, scale: 0.9 }}
+                 whileInView={{ opacity: 1, scale: 1 }}
+                 viewport={{ margin: "-100px" }}
+                 transition={{ duration: 0.8, ease: "easeOut" }}
+                 className="text-6xl md:text-8xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] mb-12 drop-shadow-xl text-center"
+               >
+                 The Grand Archive
+               </motion.h2>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 w-full max-w-5xl">
+                  <motion.div 
+                    onMouseEnter={playCrystalChime}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="ghibli-glass p-8 md:p-12 text-left group hover:-translate-y-2 transition-transform duration-500"
+                  >
+                     <Sparkles className="w-10 h-10 text-[var(--color-primary)] mb-6 opacity-80" />
+                     <h3 className="text-3xl md:text-4xl font-serif mb-4 md:mb-6 text-[#fdfae7]">Cinematic UX</h3>
+                     <p className="text-[#fdfae7]/70 md:text-xl font-light mb-8 leading-relaxed">Framer Motion, Lenis Scroll, and WebGL mapping scroll states into 3D environments.</p>
+                  </motion.div>
+
+                  <motion.div 
+                    onMouseEnter={playCrystalChime}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    className="ghibli-glass p-8 md:p-12 text-left group hover:-translate-y-2 transition-transform duration-500"
+                  >
+                     <Sprout className="w-10 h-10 text-[var(--color-secondary)] mb-6 opacity-80" />
+                     <h3 className="text-3xl md:text-4xl font-serif mb-4 md:mb-6 text-[#fdfae7]">React Core</h3>
+                     <p className="text-[#fdfae7]/70 md:text-xl font-light mb-8 leading-relaxed">Structuring deep component trees to elegantly handle complex, overlapping state logic.</p>
+                  </motion.div>
+               </div>
             </div>
-            <span className="inline-block px-3 py-1 bg-[var(--color-secondary)]/20 text-[var(--color-secondary)] text-xs tracking-widest uppercase rounded-full mb-4 border border-[var(--color-secondary)]/30">
-              Meaning: Noble
-            </span>
-            <p className="text-lg leading-relaxed text-gray-300 relative z-10">
-              "A polymathic seeker of elegance in complexity—from the laws of logic and chemistry to the pulse of hardware. Whether on the field or in the lab, I am a perpetual student of the game, mastering new worlds through play and relentless curiosity."
+         </div>
+      </section>
+
+      {/* --- THE GRAND FINALE FOOTER --- */}
+      <footer className="relative w-full min-h-[80vh] bg-black flex flex-col items-center justify-center text-center overflow-hidden z-20">
+         <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="flex flex-col items-center z-10 px-4"
+         >
+            <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-[var(--color-primary)] to-[var(--color-secondary)] opacity-10 blur-[50px] absolute" />
+            <Sparkles className="w-8 h-8 text-[var(--color-secondary)] opacity-50 mb-8" />
+            <h2 className="text-5xl md:text-7xl font-serif font-light text-[#fdfae7] mb-8">Ready to weave the next chapter?</h2>
+            <p className="text-xl text-[#fdfae7]/50 font-light mb-16 max-w-xl">
+               Let's collaborate on creating digital experiences that feel human, magical, and unforgettable.
             </p>
-          </div>
-        </motion.div>
+            <button 
+               onMouseEnter={playCrystalChime}
+               className="ghibli-button"
+            >
+               Connect Now
+            </button>
+         </motion.div>
+      </footer>
 
-        {/* Right Column: Traits & Philosophy */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 50 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
-          className="flex-1 w-full space-y-8"
-        >
-          {/* Card 1 */}
-          <div className="glass-panel p-8 md:p-10 transform transition-all duration-500 hover:-translate-y-2 hover:border-[var(--color-secondary)]/30">
-            <div className="flex items-start gap-6">
-              <div className="p-4 bg-[var(--color-secondary)]/10 rounded-2xl">
-                <Terminal className="w-8 h-8 text-[var(--color-secondary)]" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-serif mb-3 text-white">Creative Developer</h3>
-                <p className="text-gray-400 leading-relaxed font-light">
-                  Bridging the gap between engineering and art. I specialize in building highly interactive, visually striking digital experiences using modern web technologies, WebGL, and precise mathematical motion.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 */}
-          <div className="glass-panel p-8 md:p-10 transform transition-all duration-500 hover:-translate-y-2 hover:border-purple-500/30">
-            <div className="flex items-start gap-6">
-              <div className="p-4 bg-purple-500/10 rounded-2xl">
-                <Compass className="w-8 h-8 text-purple-400" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-serif mb-3 text-white">Polymathic Explorer</h3>
-                <p className="text-gray-400 leading-relaxed font-light">
-                  My curiosity spans far beyond the screen. I draw inspiration from diverse fields—architecture, physics, astronomy, and organic systems—to inform fluid, natural logic in my code and designs.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Setup / Metrics Array */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="glass-panel p-6 flex flex-col justify-center items-center text-center group">
-              <span className="text-4xl font-serif text-[var(--color-secondary)] mb-2 group-hover:scale-110 transition-transform">01</span>
-              <span className="text-xs tracking-widest text-gray-500 uppercase">Primary Focus</span>
-              <span className="mt-1 text-sm font-bold text-gray-300">Spatial Interfaces</span>
-            </div>
-            <div className="glass-panel p-6 flex flex-col justify-center items-center text-center group">
-              <span className="text-4xl font-serif text-purple-400 mb-2 group-hover:scale-110 transition-transform">02</span>
-              <span className="text-xs tracking-widest text-gray-500 uppercase">Core Stack</span>
-              <span className="mt-1 text-sm font-bold text-gray-300">Next.js & Three.js</span>
-            </div>
-          </div>
-        </motion.div>
-      </div>
     </main>
   );
 }
