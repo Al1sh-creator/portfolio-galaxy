@@ -654,7 +654,7 @@ function flyToPlanet(planet) {
                 warpOverlay.style.opacity = '1';
                 setTimeout(() => {
                     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-                    window.location.href = isLocal ? 'http://localhost:3003' : 'https://about-alish.vercel.app/';
+                    window.location.href = isLocal ? 'http://localhost:3003' : 'https://about-me-kohl-xi.vercel.app/';
                 }, 1000);
             }
         });
