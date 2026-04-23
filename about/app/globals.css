@@ -10,20 +10,25 @@
   --color-on-surface: #2a1f28;   /* Deep Twilight Purple for text contrast */
   --color-accent: #ff9e9a;
   
+  /* Cyberpunk Gen Z colors */
+  --color-neon-purple: #b829ff;
+  --color-neon-green: #39ff14;
+  --color-neon-pink: #ff007f;
+  
   --font-serif: "Lora", serif;
   --font-sans: "Nunito", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 @layer base {
   body {
-    @apply bg-[#2a1f28] text-[#fdfae7] font-sans antialiased overflow-x-hidden cursor-none;
+    @apply bg-[#0c0c0c] text-[#fdfae7] font-sans antialiased overflow-x-hidden cursor-none;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
   
-  /* Disable default pointer cursor globally since we have a custom cursor */
   a, button, [role="button"], input, select, textarea {
     cursor: none !important;
   }
@@ -31,36 +36,101 @@
 
 @layer utilities {
   .ghibli-glass {
-    @apply bg-[#3d2f3a]/80 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden;
+    @apply bg-[#151515]/90 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden;
   }
   
+  .manga-panel {
+    @apply bg-[#050505] border-4 border-[#333] shadow-[8px_8px_0px_#ff007f] transition-all duration-300;
+  }
+  
+  .manga-panel:hover {
+    @apply shadow-[12px_12px_0px_#39ff14] -translate-y-1 -translate-x-1;
+  }
+
   .ghibli-gradient-text {
     @apply bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-container)] bg-clip-text text-transparent;
   }
 
   .ghibli-button {
-    @apply relative overflow-hidden rounded-full bg-gradient-to-r from-[var(--color-primary-container)] to-[var(--color-secondary)] px-10 py-4 text-[#2a1f28] font-bold tracking-widest uppercase transition-transform hover:-translate-y-1;
+    @apply relative overflow-hidden rounded-md border-2 border-[var(--color-neon-green)] bg-black px-10 py-4 text-[var(--color-neon-green)] font-mono font-bold tracking-widest uppercase transition-all duration-300 hover:bg-[var(--color-neon-green)] hover:text-black;
   }
   
-  .light-leak {
-    background: radial-gradient(circle, rgba(255,158,154,0.1) 0%, transparent 70%);
+  .halftone-bg {
+    background-image: radial-gradient(circle, #333 1px, transparent 1.5px);
+    background-size: 8px 8px;
   }
-
-  .animate-breathe {
-    animation: text-breath 6s ease-in-out infinite alternate;
+  
+  .cyber-glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .cyber-glitch-text::before,
+  .cyber-glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+  
+  .cyber-glitch-text::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--color-neon-pink);
+    clip: rect(24px, 550px, 90px, 0);
+    animation: cyber-glitch-anim 3s infinite linear alternate-reverse;
+  }
+  
+  .cyber-glitch-text::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--color-neon-green);
+    clip: rect(85px, 550px, 140px, 0);
+    animation: cyber-glitch-anim 2s infinite linear alternate-reverse;
   }
 }
 
-@keyframes text-breath {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-3px); }
+@keyframes cyber-glitch-anim {
+  0% { clip: rect(20px, 9999px, 85px, 0); }
+  5% { clip: rect(61px, 9999px, 13px, 0); }
+  10% { clip: rect(72px, 9999px, 86px, 0); }
+  15% { clip: rect(32px, 9999px, 66px, 0); }
+  20% { clip: rect(100px, 9999px, 33px, 0); }
+  25% { clip: rect(2px, 9999px, 91px, 0); }
+  30% { clip: rect(54px, 9999px, 51px, 0); }
+  35% { clip: rect(25px, 9999px, 44px, 0); }
+  40% { clip: rect(93px, 9999px, 20px, 0); }
+  45% { clip: rect(78px, 9999px, 11px, 0); }
+  50% { clip: rect(11px, 9999px, 64px, 0); }
+  55% { clip: rect(89px, 9999px, 88px, 0); }
+  60% { clip: rect(27px, 9999px, 46px, 0); }
+  65% { clip: rect(13px, 9999px, 29px, 0); }
+  70% { clip: rect(48px, 9999px, 81px, 0); }
+  75% { clip: rect(100px, 9999px, 6px, 0); }
+  80% { clip: rect(81px, 9999px, 73px, 0); }
+  85% { clip: rect(68px, 9999px, 14px, 0); }
+  90% { clip: rect(4px, 9999px, 25px, 0); }
+  95% { clip: rect(33px, 9999px, 90px, 0); }
+  100% { clip: rect(57px, 9999px, 68px, 0); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
 }
 
 .firefly {
   position: absolute;
   border-radius: 50%;
-  background: var(--color-secondary);
-  box-shadow: 0 0 10px rgba(255,229,143,0.5);
+  background: var(--color-neon-purple);
+  box-shadow: 0 0 10px rgba(184, 41, 255, 0.8);
   opacity: 0;
   will-change: transform, opacity;
   animation: float-gently linear infinite;
@@ -68,12 +138,11 @@
 
 @keyframes float-gently {
   0% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }
-  20% { opacity: 0.4; }
-  80% { opacity: 0.4; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.6; }
   100% { transform: translate3d(0, -20vh, 0) scale(1.5); opacity: 0; }
 }
 
-/* Lenis */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
