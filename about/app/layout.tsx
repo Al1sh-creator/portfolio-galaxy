@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
-import { Lora, Nunito } from "next/font/google";
+import { Fraunces, Nunito, Caveat } from "next/font/google";
 import "./globals.css";
 
-const lora = Lora({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-lora",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-fraunces",
+  weight: ["300", "700", "900"],
   style: ["normal", "italic"],
 });
 
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
-  weight: ["300", "400", "600", "700"],
+  weight: ["400", "600", "700", "900"],
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  weight: ["400", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Explorer | The Arcane Laboratory",
-  description: "A whimsical, Ghibli-inspired exploration of skills and journey.",
+  title: "Alish — About Me",
+  description: "The fun version of my story. Builder, tinkerer, and enthusiastic overthinker.",
 };
 
 export default function RootLayout({
@@ -26,8 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${lora.variable} ${nunito.variable} antialiased`}>
-      <body className="min-h-screen bg-[var(--color-surface)] selection:bg-[var(--color-primary-container)] selection:text-white">
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${nunito.variable} ${caveat.variable} antialiased`}
+    >
+      <body
+        className="min-h-screen selection:bg-orange-200 selection:text-orange-900"
+        style={{ fontFamily: "var(--font-nunito, Nunito, sans-serif)" }}
+      >
         {children}
       </body>
     </html>

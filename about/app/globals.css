@@ -1,149 +1,128 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #ffbca3;      /* Soft Peach */
-  --color-primary-container: #ff9e9a; /* Sunset Pink */
-  --color-secondary: #ffe58f;    /* Golden Hour */
-  --color-secondary-container: #ffd599; /* Warm Gold */
-  --color-surface: #fdfae7;
+  --color-bg: #fffbf5;
+  --color-ink: #1a1208;
+  --color-warm-orange: #f97316;
+  --color-warm-yellow: #facc15;
+  --color-warm-pink: #f9a8d4;
+  --color-warm-green: #86efac;
+  --color-warm-blue: #93c5fd;
+  --color-warm-purple: #c4b5fd;
+  --color-warm-coral: #fca5a5;
+  --color-muted: #6b5e4e;
   
-  --color-on-surface: #2a1f28;   /* Deep Twilight Purple for text contrast */
-  --color-accent: #ff9e9a;
-  
-  /* Cyberpunk Gen Z colors */
-  --color-neon-purple: #b829ff;
-  --color-neon-green: #39ff14;
-  --color-neon-pink: #ff007f;
-  
-  --font-serif: "Lora", serif;
-  --font-sans: "Nunito", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-display: var(--font-fraunces, serif);
+  --font-body: var(--font-nunito, sans-serif);
+  --font-hand: var(--font-caveat, cursive);
 }
 
 @layer base {
   body {
-    @apply bg-[#0c0c0c] text-[#fdfae7] font-sans antialiased overflow-x-hidden cursor-none;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
-  }
-  
-  a, button, [role="button"], input, select, textarea {
-    cursor: none !important;
-  }
-}
-
-@layer utilities {
-  .ghibli-glass {
-    @apply bg-[#151515]/90 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden;
-  }
-  
-  .manga-panel {
-    @apply bg-[#050505] border-4 border-[#333] shadow-[8px_8px_0px_#ff007f] transition-all duration-300;
-  }
-  
-  .manga-panel:hover {
-    @apply shadow-[12px_12px_0px_#39ff14] -translate-y-1 -translate-x-1;
-  }
-
-  .ghibli-gradient-text {
-    @apply bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-container)] bg-clip-text text-transparent;
-  }
-
-  .ghibli-button {
-    @apply relative overflow-hidden rounded-md border-2 border-[var(--color-neon-green)] bg-black px-10 py-4 text-[var(--color-neon-green)] font-mono font-bold tracking-widest uppercase transition-all duration-300 hover:bg-[var(--color-neon-green)] hover:text-black;
-  }
-  
-  .halftone-bg {
-    background-image: radial-gradient(circle, #333 1px, transparent 1.5px);
-    background-size: 8px 8px;
-  }
-  
-  .cyber-glitch-text {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .cyber-glitch-text::before,
-  .cyber-glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.8;
-  }
-  
-  .cyber-glitch-text::before {
-    left: 2px;
-    text-shadow: -2px 0 var(--color-neon-pink);
-    clip: rect(24px, 550px, 90px, 0);
-    animation: cyber-glitch-anim 3s infinite linear alternate-reverse;
-  }
-  
-  .cyber-glitch-text::after {
-    left: -2px;
-    text-shadow: -2px 0 var(--color-neon-green);
-    clip: rect(85px, 550px, 140px, 0);
-    animation: cyber-glitch-anim 2s infinite linear alternate-reverse;
+    @apply overflow-x-hidden;
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(249, 168, 212, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(147, 197, 253, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.04) 0%, transparent 70%);
   }
 }
 
-@keyframes cyber-glitch-anim {
-  0% { clip: rect(20px, 9999px, 85px, 0); }
-  5% { clip: rect(61px, 9999px, 13px, 0); }
-  10% { clip: rect(72px, 9999px, 86px, 0); }
-  15% { clip: rect(32px, 9999px, 66px, 0); }
-  20% { clip: rect(100px, 9999px, 33px, 0); }
-  25% { clip: rect(2px, 9999px, 91px, 0); }
-  30% { clip: rect(54px, 9999px, 51px, 0); }
-  35% { clip: rect(25px, 9999px, 44px, 0); }
-  40% { clip: rect(93px, 9999px, 20px, 0); }
-  45% { clip: rect(78px, 9999px, 11px, 0); }
-  50% { clip: rect(11px, 9999px, 64px, 0); }
-  55% { clip: rect(89px, 9999px, 88px, 0); }
-  60% { clip: rect(27px, 9999px, 46px, 0); }
-  65% { clip: rect(13px, 9999px, 29px, 0); }
-  70% { clip: rect(48px, 9999px, 81px, 0); }
-  75% { clip: rect(100px, 9999px, 6px, 0); }
-  80% { clip: rect(81px, 9999px, 73px, 0); }
-  85% { clip: rect(68px, 9999px, 14px, 0); }
-  90% { clip: rect(4px, 9999px, 25px, 0); }
-  95% { clip: rect(33px, 9999px, 90px, 0); }
-  100% { clip: rect(57px, 9999px, 68px, 0); }
+/* ---- Typography ---- */
+.display-font { font-family: var(--font-display); }
+.hand-font { font-family: var(--font-hand); }
+
+/* ---- Sticker / highlight effect ---- */
+.sticker {
+  display: inline-block;
+  position: relative;
+}
+.sticker::before {
+  content: '';
+  position: absolute;
+  inset: -4px -6px;
+  border-radius: 6px;
+  z-index: -1;
+}
+.sticker-yellow::before { background: var(--color-warm-yellow); }
+.sticker-pink::before { background: var(--color-warm-pink); }
+.sticker-green::before { background: var(--color-warm-green); }
+.sticker-blue::before { background: var(--color-warm-blue); }
+.sticker-orange::before { background: var(--color-warm-orange); opacity: 0.3; }
+
+/* ---- Card / panel ---- */
+.fun-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px solid rgba(26, 18, 8, 0.08);
+  box-shadow: 4px 6px 0px rgba(26, 18, 8, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.fun-card:hover {
+  transform: translateY(-4px) rotate(-0.5deg);
+  box-shadow: 6px 10px 0px rgba(26, 18, 8, 0.08);
 }
 
+/* ---- Wavy divider ---- */
+.wavy-divider {
+  width: 100%;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Floating animations ---- */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(-6px) rotate(-1deg); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes pop-in {
+  0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+  80% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
-.animate-marquee {
-  display: inline-block;
-  white-space: nowrap;
-  animation: marquee 20s linear infinite;
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-.firefly {
-  position: absolute;
-  border-radius: 50%;
-  background: var(--color-neon-purple);
-  box-shadow: 0 0 10px rgba(184, 41, 255, 0.8);
-  opacity: 0;
-  will-change: transform, opacity;
-  animation: float-gently linear infinite;
-}
+.animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+.animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
+.animate-wiggle { animation: wiggle 3s ease-in-out infinite; }
+.animate-pop-in { animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.animate-marquee { display: inline-block; animation: marquee 25s linear infinite; }
 
-@keyframes float-gently {
-  0% { transform: translate3d(0, 0, 0) scale(0); opacity: 0; }
-  20% { opacity: 0.6; }
-  80% { opacity: 0.6; }
-  100% { transform: translate3d(0, -20vh, 0) scale(1.5); opacity: 0; }
-}
-
+/* ---- Lenis smooth scroll ---- */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+/* ---- Confetti blobs ---- */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-warm-orange); border-radius: 99px; }
