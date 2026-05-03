@@ -126,3 +126,111 @@ html.lenis, html.lenis body { height: auto; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-warm-orange); border-radius: 99px; }
+
+/* ---- 2AM Theme ---- */
+[data-theme="2am"] {
+  --color-bg: #0d1117;
+  --color-ink: #e6edf3;
+  --color-warm-orange: #ff8c00;
+  --color-warm-yellow: #ffee00;
+  --color-warm-pink: #ff00ff;
+  --color-warm-blue: #00ffff;
+  --color-warm-purple: #b026ff;
+  --color-muted: #8b949e;
+}
+
+[data-theme="2am"] .fun-card {
+  background: #161b22;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 4px 6px 0px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="2am"] .fun-card:hover {
+  box-shadow: 6px 10px 0px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="2am"] nav {
+  mix-blend-mode: normal;
+}
+
+/* ---- Manga Panels ---- */
+.manga-panel {
+  background-color: var(--color-bg);
+  border: 4px solid var(--color-ink);
+  box-shadow: 6px 6px 0 var(--color-ink);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.manga-panel:hover {
+  transform: translate(-2px, -2px) rotate(0.5deg);
+  box-shadow: 8px 8px 0 var(--color-ink);
+}
+
+.manga-lines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    var(--color-ink) 10px,
+    var(--color-ink) 12px
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+[data-theme="2am"] .manga-lines::before {
+  opacity: 0.08;
+}
+
+/* ---- Glitch effect ---- */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+.glitch-text:hover {
+  animation: glitch-anim 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+.glitch-text:hover::before,
+.glitch-text:hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.glitch-text:hover::before {
+  left: 2px;
+  text-shadow: -2px 0 #ff00ff;
+  clip: rect(10px, 550px, 20px, 0);
+  animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+}
+.glitch-text:hover::after {
+  left: -2px;
+  text-shadow: -2px 0 #00ffff;
+  clip: rect(5px, 550px, 15px, 0);
+  animation: glitch-anim 0.2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 1px) }
+  40% { transform: translate(-1px, -1px) }
+  60% { transform: translate(2px, 1px) }
+  80% { transform: translate(1px, -1px) }
+  100% { transform: translate(0) }
+}
+@keyframes glitch-anim-2 {
+  0% { transform: translate(0) }
+  20% { transform: translate(2px, -1px) }
+  40% { transform: translate(1px, 1px) }
+  60% { transform: translate(-2px, -1px) }
+  80% { transform: translate(-1px, 1px) }
+  100% { transform: translate(0) }
+}

@@ -55,26 +55,101 @@ const FloatingDots = () => {
 };
 
 // ---- STICKY HEADER ----
-const Nav = () => (
-  <nav className="fixed top-0 w-full z-50 px-6 py-4 mix-blend-multiply pointer-events-none">
-    <div className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto">
-      <a
-        href="https://portfolio-galaxy-five.vercel.app/"
-        className="group flex items-center gap-2 font-bold text-sm tracking-wide text-[var(--color-muted)] hover:text-[var(--color-warm-orange)] transition-colors"
-        style={{ fontFamily: "var(--font-hand)", fontSize: "1.1rem" }}
+const Nav = () => {
+  const [is2AM, setIs2AM] = useState(false);
+  useEffect(() => {
+    if (is2AM) {
+      document.documentElement.setAttribute("data-theme", "2am");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }, [is2AM]);
+
+  return (
+    <nav className="fixed top-0 w-full z-50 px-6 py-4 mix-blend-multiply pointer-events-none transition-colors duration-500">
+      <div className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto">
+        <a
+          href="https://portfolio-galaxy-five.vercel.app/"
+          className="group flex items-center gap-2 font-bold text-sm tracking-wide text-[var(--color-muted)] hover:text-[var(--color-warm-orange)] transition-colors"
+          style={{ fontFamily: "var(--font-hand)", fontSize: "1.1rem" }}
+        >
+          <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
+          back to the galaxy
+        </a>
+        <button
+          onClick={() => setIs2AM(!is2AM)}
+          className="flex items-center gap-2 px-3 py-1 rounded-full border border-black/10 hover:scale-105 transition-transform"
+          style={{ fontFamily: "var(--font-hand)", fontSize: "1.1rem", background: is2AM ? '#161b22' : 'white', color: 'var(--color-ink)' }}
+        >
+          Vibe Check: {is2AM ? "🌙 2AM" : "☀️ Day"}
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+// ---- ORBITAL CURSOR ----
+const OrbitalCursor = () => {
+  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
+  const [angle, setAngle] = useState(0);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId: number;
+    const animate = () => {
+      setAngle((prev) => (prev + 0.05) % (Math.PI * 2));
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(animationFrameId);
+  }, []);
+
+  const r = 40;
+  const orbitX = mousePos.x + Math.cos(angle) * r;
+  const orbitY = mousePos.y + Math.sin(angle) * r;
+
+  return (
+    <div className="pointer-events-none fixed top-0 left-0 z-[100] hidden md:block">
+      <motion.div
+        className="absolute text-xl drop-shadow-md"
+        animate={{ x: orbitX - 10, y: orbitY - 10 }}
+        transition={{ type: "spring", stiffness: 1000, damping: 50, mass: 0.1 }}
       >
-        <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
-        back to the galaxy
-      </a>
-      <span
-        className="text-xs text-[var(--color-muted)] opacity-60"
-        style={{ fontFamily: "var(--font-hand)", fontSize: "1rem" }}
-      >
-        currently vibing ☀️
-      </span>
+        🪐
+      </motion.div>
     </div>
-  </nav>
-);
+  );
+};
+
+// ---- SCROLL PROGRESS ----
+const BrainwaveProgress = () => {
+  const { scrollYProgress } = useScroll();
+  const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  return (
+    <div className="fixed top-[70px] left-0 w-full h-4 z-40 pointer-events-none opacity-50 hidden md:block">
+      <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 20">
+        <motion.path
+          d="M0,10 L10,10 L15,0 L20,20 L25,5 L30,15 L35,10 L100,10"
+          vectorEffect="non-scaling-stroke"
+          fill="none"
+          stroke="var(--color-warm-orange)"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ pathLength }}
+        />
+      </svg>
+    </div>
+  );
+};
 
 // ---- HIGHLIGHT MARKER ----
 const Mark = ({ children, color = "#facc15" }: { children: React.ReactNode; color?: string }) => (
@@ -177,48 +252,96 @@ const TimelineEntry = ({
   desc,
   emoji,
   delay = 0,
+  alignRight = false,
 }: {
   year: string;
   title: string;
   desc: string;
   emoji: string;
   delay?: number;
+  alignRight?: boolean;
 }) => (
   <motion.div
-    initial={{ opacity: 0, x: -30 }}
+    initial={{ opacity: 0, x: alignRight ? 50 : -50 }}
     whileInView={{ opacity: 1, x: 0 }}
     viewport={{ once: true, margin: "-40px" }}
-    transition={{ duration: 0.5, delay }}
-    className="flex gap-6 group"
+    transition={{ duration: 0.6, delay, type: "spring", stiffness: 100 }}
+    className={`flex w-full mb-8 ${alignRight ? "justify-end" : "justify-start"}`}
   >
-    <div className="flex flex-col items-center gap-1 shrink-0">
-      <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-sm group-hover:scale-110 transition-transform"
-        style={{ background: "var(--color-warm-yellow)", color: "var(--color-ink)" }}
-      >
-        {emoji}
+    <div className={`manga-panel manga-lines p-6 md:p-8 max-w-md ${alignRight ? "rotate-1" : "-rotate-1"}`}>
+      <div className="flex gap-4 items-start relative z-10">
+        <div
+          className="w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-2xl font-bold border-2 border-[var(--color-ink)] bg-[var(--color-bg)]"
+        >
+          {emoji}
+        </div>
+        <div>
+          <span
+            className="text-xs font-black tracking-widest uppercase mb-1 block bg-[var(--color-ink)] text-[var(--color-bg)] inline-block px-2 py-0.5 transform -skew-x-12"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {year}
+          </span>
+          <h3
+            className="text-xl md:text-2xl font-black mb-2 leading-tight uppercase"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+          >
+            {title}
+          </h3>
+          <p className="text-sm leading-relaxed font-bold" style={{ color: "var(--color-muted)" }}>
+            {desc}
+          </p>
+        </div>
       </div>
-      <div className="w-0.5 flex-1 rounded-full" style={{ background: "rgba(26,18,8,0.08)", minHeight: "40px" }} />
-    </div>
-    <div className="pb-10">
-      <span
-        className="text-xs font-bold tracking-widest uppercase mb-1 block"
-        style={{ color: "var(--color-warm-orange)", fontFamily: "var(--font-body)" }}
-      >
-        {year}
-      </span>
-      <h3
-        className="text-xl font-black mb-1"
-        style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
-      >
-        {title}
-      </h3>
-      <p className="text-sm leading-relaxed" style={{ color: "var(--color-muted)" }}>
-        {desc}
-      </p>
     </div>
   </motion.div>
 );
+
+// ---- DESK SANDBOX ----
+const DeskSandbox = () => {
+  const constraintsRef = useRef(null);
+  
+  const items = [
+    { emoji: "🍜", label: "Maggi", size: "text-6xl", top: "10%", left: "10%" },
+    { emoji: "⚽", label: "Football", size: "text-5xl", top: "20%", left: "70%" },
+    { emoji: "🏏", label: "Cricket", size: "text-5xl", top: "60%", left: "20%" },
+    { emoji: "📚", label: "Science", size: "text-6xl", top: "50%", left: "80%" },
+    { emoji: "🪐", label: "Planet", size: "text-7xl", top: "70%", left: "50%" },
+  ];
+
+  return (
+    <section className="relative w-full max-w-4xl mx-auto px-6 py-24 cursor-crosshair">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl md:text-5xl font-black mb-3" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+          My Desk
+        </h2>
+        <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.2rem", color: "var(--color-muted)" }}>
+          (grab things and throw them around)
+        </p>
+      </div>
+      <motion.div 
+        ref={constraintsRef} 
+        className="w-full h-80 md:h-96 rounded-3xl border-4 overflow-hidden relative manga-lines"
+        style={{ borderColor: "var(--color-ink)", backgroundColor: "var(--color-bg)", boxShadow: "inset 0 0 20px rgba(0,0,0,0.05)" }}
+      >
+        {items.map((item, i) => (
+          <motion.div
+            key={i}
+            drag
+            dragConstraints={constraintsRef}
+            dragElastic={0.2}
+            whileDrag={{ scale: 1.2, cursor: "grabbing" }}
+            className={`absolute cursor-grab select-none ${item.size} drop-shadow-lg z-10 hover:z-20`}
+            style={{ top: item.top, left: item.left }}
+            title={item.label}
+          >
+            {item.emoji}
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+};
 
 // ---- MAIN PAGE ----
 export default function Home() {
@@ -238,9 +361,11 @@ export default function Home() {
 
   return (
     <main
-      className="relative min-h-screen pb-32 overflow-x-hidden"
+      className="relative min-h-screen pb-32 overflow-x-hidden transition-colors duration-500"
       style={{ background: "var(--color-bg)" }}
     >
+      <OrbitalCursor />
+      <BrainwaveProgress />
       <FloatingDots />
       <Nav />
 
@@ -377,9 +502,7 @@ export default function Home() {
             style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
           >
             <p>
-              I'm Alish — a <Mark color="#f97316">creator, tinkerer, and enthusiastic overthinker</Mark> from
-              India. I got into building things for the web because I couldn't find what I
-              imagined, so I just… made it myself. Turns out that's a pretty good superpower.
+              I'm Alish — just a regular guy from India who somehow ended up being a <Mark color="#f97316"><span className="glitch-text" data-text="creator, tinkerer, and aggressive overthinker">creator, tinkerer, and aggressive overthinker</span></Mark>. I got into building things for the web because I couldn't find what I wanted to see, so I just… decided to make it myself.
             </p>
             <p>
               I care a lot about how things{" "}
@@ -388,10 +511,7 @@ export default function Home() {
               obsess over all of it.
             </p>
             <p>
-              Outside of screens I'm probably reading something dense, down a YouTube rabbit
-              hole about{" "}
-              <Mark color="#facc15">orbital mechanics or anime theory</Mark>, or attempting
-              to understand the universe one Wikipedia article at a time.
+              When I'm not staring at a screen, I'm probably surviving on an unhealthy amount of <Mark color="#f97316">Maggi</Mark>, out playing <Mark color="#86efac">football</Mark> or <Mark color="#93c5fd">cricket</Mark>, or casually trying to wrap my head around insanely dense <Mark color="#facc15">scientific theories</Mark>. Oh, and my YouTube algorithm is a completely <span className="glitch-text" data-text="chaotic mix of astrophysics and anime">chaotic mix of astrophysics and anime</span>.
             </p>
             <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.25rem", color: "var(--color-ink)" }}>
               Basically: curious by nature, creative by choice, and caffeinated by necessity. ☕
@@ -505,7 +625,10 @@ export default function Home() {
             {[
               { label: "🌌 Space & Astrophysics", color: "#93c5fd" },
               { label: "🎌 Anime & Manga", color: "#f9a8d4" },
-              { label: "☕ Coffee rituals", color: "#f97316" },
+              { label: "🍜 Eating Maggi", color: "#f97316" },
+              { label: "⚽ Football", color: "#86efac" },
+              { label: "🏏 Cricket", color: "#93c5fd" },
+              { label: "🔬 Scientific Theories", color: "#c4b5fd" },
               { label: "🎵 Indie & Lo-fi", color: "#c4b5fd" },
               { label: "🔭 Orbital Mechanics", color: "#86efac" },
               { label: "📖 Philosophy", color: "#facc15" },
@@ -558,6 +681,7 @@ export default function Home() {
             title="First encounter with a computer"
             desc="Dad let me use his PC. I immediately broke the screensaver settings. Was very proud of this achievement."
             delay={0}
+            alignRight={false}
           />
           <TimelineEntry
             year="A bit later"
@@ -565,6 +689,7 @@ export default function Home() {
             title="Became obsessed with 'how things work'"
             desc="Spent more time in game menus than actually playing. Always curious about what was happening behind the scenes."
             delay={0.1}
+            alignRight={true}
           />
           <TimelineEntry
             year="The big click"
@@ -572,6 +697,7 @@ export default function Home() {
             title="Discovered I could build things"
             desc="Made my first clumsy webpage. It was terrible. But it was mine — and that feeling was completely addictive."
             delay={0.2}
+            alignRight={false}
           />
           <TimelineEntry
             year="Down the rabbit hole"
@@ -579,6 +705,7 @@ export default function Home() {
             title="Learned by doing (and by breaking things)"
             desc="Tutorials, YouTube, trial and error, Stack Overflow at midnight. The classic curriculum of every self-taught creator."
             delay={0.3}
+            alignRight={true}
           />
           <TimelineEntry
             year="Now"
@@ -586,9 +713,12 @@ export default function Home() {
             title="Building things I'm actually proud of"
             desc="Every project teaches me something. The goal is always to make something that someone else looks at and says — wait, how did they do that?"
             delay={0.4}
+            alignRight={false}
           />
         </div>
       </section>
+
+      <DeskSandbox />
 
       {/* ===== CONNECT CTA ===== */}
       <section className="relative w-full max-w-4xl mx-auto px-6 pb-16">
