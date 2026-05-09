@@ -267,7 +267,7 @@ const TimelineEntry = ({
 );
 
 // ---- DESK SANDBOX ----
-const DeskSandbox = () => {
+const DeskSandbox = ({ onFindHorcrux, foundHorcruxes }: { onFindHorcrux: (id: string) => void, foundHorcruxes: string[] }) => {
   const constraintsRef = useRef(null);
   
     const items = [
@@ -281,7 +281,7 @@ const DeskSandbox = () => {
   return (
     <section className="relative w-full max-w-4xl mx-auto px-6 py-24 cursor-crosshair">
       {/* Horcrux 2 */}
-      <Horcrux id="ring" onFind={handleFindHorcrux} found={foundHorcruxes.includes("ring")} className="top-10 right-10" />
+      <Horcrux id="ring" onFind={onFindHorcrux} found={foundHorcruxes.includes("ring")} className="top-10 right-10" />
 
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-5xl font-black mb-3" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
@@ -808,7 +808,7 @@ export default function Home() {
         </div>
       </section>
 
-      <DeskSandbox />
+      <DeskSandbox onFindHorcrux={handleFindHorcrux} foundHorcruxes={foundHorcruxes} />
 
       {/* ===== CONNECT CTA ===== */}
       <section className="relative w-full max-w-4xl mx-auto px-6 pb-16">
