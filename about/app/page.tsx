@@ -4,28 +4,27 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Lenis from "lenis";
 
-// ---- EMOJI CONFETTI ----
-const CONFETTI = ["✦", "✧", "❋", "◈", "⬡", "◇", "✿", "❀", "⊹", "✺"];
+// ---- FLOATING RUNES ----
+const RUNES = ["⚡", "✦", "◈", "☽", "△", "✧", "⊹", "☆", "⍟"];
 const FloatingDots = () => {
   const [dots, setDots] = useState<any[]>([]);
   useEffect(() => {
     setDots(
-      Array.from({ length: 18 }).map((_, i) => ({
+      Array.from({ length: 22 }).map((_, i) => ({
         id: i,
         left: Math.random() * 100,
         top: Math.random() * 100,
-        size: Math.random() * 12 + 6,
+        size: Math.random() * 10 + 8,
         color: [
-          "var(--color-warm-yellow)",
-          "var(--color-warm-pink)",
-          "var(--color-warm-green)",
-          "var(--color-warm-blue)",
-          "var(--color-warm-orange)",
-          "var(--color-warm-purple)",
-        ][Math.floor(Math.random() * 6)],
-        dur: Math.random() * 4 + 4,
-        del: Math.random() * 4,
-        char: CONFETTI[Math.floor(Math.random() * CONFETTI.length)],
+          "var(--color-gold)",
+          "var(--color-gold-dim)",
+          "var(--color-crimson)",
+          "var(--color-emerald)",
+          "var(--color-silver)",
+        ][Math.floor(Math.random() * 5)],
+        dur: Math.random() * 6 + 6,
+        del: Math.random() * 5,
+        char: RUNES[Math.floor(Math.random() * RUNES.length)],
       }))
     );
   }, []);
@@ -34,7 +33,7 @@ const FloatingDots = () => {
       {dots.map((d) => (
         <span
           key={d.id}
-          className="absolute select-none font-bold opacity-20"
+          className="absolute select-none font-bold"
           style={{
             left: `${d.left}%`,
             top: `${d.top}%`,
@@ -56,39 +55,45 @@ const FloatingDots = () => {
 
 // ---- STICKY HEADER ----
 const Nav = () => {
-  const [is2AM, setIs2AM] = useState(false);
+  const [isMarauder, setIsMarauder] = useState(false);
   useEffect(() => {
-    if (is2AM) {
-      document.documentElement.setAttribute("data-theme", "2am");
+    if (isMarauder) {
+      document.documentElement.setAttribute("data-theme", "marauder");
     } else {
       document.documentElement.removeAttribute("data-theme");
     }
-  }, [is2AM]);
+  }, [isMarauder]);
 
   return (
-    <nav className="fixed top-0 w-full z-50 px-6 py-4 mix-blend-multiply pointer-events-none transition-colors duration-500">
+    <nav className="fixed top-0 w-full z-50 px-6 py-4 pointer-events-none transition-colors duration-500">
       <div className="max-w-5xl mx-auto flex justify-between items-center pointer-events-auto">
         <a
           href="https://portfolio-galaxy-five.vercel.app/"
-          className="group flex items-center gap-2 font-bold text-sm tracking-wide text-[var(--color-muted)] hover:text-[var(--color-warm-orange)] transition-colors"
+          className="group flex items-center gap-2 font-bold text-sm tracking-wide text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors"
           style={{ fontFamily: "var(--font-hand)", fontSize: "1.1rem" }}
         >
           <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span>
           back to the galaxy
         </a>
         <button
-          onClick={() => setIs2AM(!is2AM)}
-          className="flex items-center gap-2 px-3 py-1 rounded-full border border-black/10 hover:scale-105 transition-transform"
-          style={{ fontFamily: "var(--font-hand)", fontSize: "1.1rem", background: is2AM ? '#161b22' : 'white', color: 'var(--color-ink)' }}
+          onClick={() => setIsMarauder(!isMarauder)}
+          className="flex items-center gap-2 px-4 py-1.5 rounded-sm border hover:scale-105 transition-transform"
+          style={{
+            fontFamily: "var(--font-hand)",
+            fontSize: "1.1rem",
+            background: isMarauder ? '#0d0b08' : 'var(--color-parchment)',
+            color: 'var(--color-gold)',
+            borderColor: 'rgba(201,168,76,0.3)',
+          }}
         >
-          Vibe Check: {is2AM ? "🌙 2AM" : "☀️ Day"}
+          {isMarauder ? "🗺️ Marauder's Map" : "⚡ Lumos"}
         </button>
       </div>
     </nav>
   );
 };
 
-// ---- ORBITAL CURSOR ----
+// ---- GOLDEN SNITCH CURSOR ----
 const OrbitalCursor = () => {
   const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
   const [angle, setAngle] = useState(0);
@@ -104,44 +109,45 @@ const OrbitalCursor = () => {
   useEffect(() => {
     let animationFrameId: number;
     const animate = () => {
-      setAngle((prev) => (prev + 0.05) % (Math.PI * 2));
+      setAngle((prev) => (prev + 0.04) % (Math.PI * 2));
       animationFrameId = requestAnimationFrame(animate);
     };
     animate();
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
-  const r = 40;
+  const r = 35;
   const orbitX = mousePos.x + Math.cos(angle) * r;
   const orbitY = mousePos.y + Math.sin(angle) * r;
 
   return (
     <div className="pointer-events-none fixed top-0 left-0 z-[100] hidden md:block">
       <motion.div
-        className="absolute text-xl drop-shadow-md"
+        className="absolute text-lg"
         animate={{ x: orbitX - 10, y: orbitY - 10 }}
-        transition={{ type: "spring", stiffness: 1000, damping: 50, mass: 0.1 }}
+        transition={{ type: "spring", stiffness: 800, damping: 40, mass: 0.1 }}
+        style={{ filter: "drop-shadow(0 0 6px rgba(201,168,76,0.5))" }}
       >
-        🪐
+        ⚡
       </motion.div>
     </div>
   );
 };
 
-// ---- SCROLL PROGRESS ----
+// ---- SCROLL PROGRESS (WAND TRAIL) ----
 const BrainwaveProgress = () => {
   const { scrollYProgress } = useScroll();
   const pathLength = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <div className="fixed top-[70px] left-0 w-full h-4 z-40 pointer-events-none opacity-50 hidden md:block">
+    <div className="fixed top-[70px] left-0 w-full h-4 z-40 pointer-events-none opacity-60 hidden md:block">
       <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 20">
         <motion.path
           d="M0,10 L10,10 L15,0 L20,20 L25,5 L30,15 L35,10 L100,10"
           vectorEffect="non-scaling-stroke"
           fill="none"
-          stroke="var(--color-warm-orange)"
-          strokeWidth="3"
+          stroke="var(--color-gold)"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{ pathLength }}
@@ -152,12 +158,13 @@ const BrainwaveProgress = () => {
 };
 
 // ---- HIGHLIGHT MARKER ----
-const Mark = ({ children, color = "#facc15" }: { children: React.ReactNode; color?: string }) => (
+const Mark = ({ children, color = "#c9a84c" }: { children: React.ReactNode; color?: string }) => (
   <span
     style={{
-      background: `linear-gradient(120deg, ${color}33 0%, ${color}88 100%)`,
+      background: `linear-gradient(120deg, ${color}22 0%, ${color}55 100%)`,
       paddingInline: "4px",
-      borderRadius: "4px",
+      borderRadius: "2px",
+      borderBottom: `1px solid ${color}66`,
     }}
   >
     {children}
@@ -372,9 +379,9 @@ export default function Home() {
       {/* ===== HERO ===== */}
       <section className="relative w-full min-h-screen flex items-center justify-center px-6 pt-24">
         {/* background blobs */}
-        <div className="blob w-80 h-80 top-10 -left-20 opacity-40" style={{ background: "var(--color-warm-pink)" }} />
-        <div className="blob w-96 h-96 bottom-0 right-0 opacity-30" style={{ background: "var(--color-warm-blue)" }} />
-        <div className="blob w-60 h-60 top-1/2 left-1/2 opacity-20" style={{ background: "var(--color-warm-yellow)" }} />
+        <div className="blob w-80 h-80 top-10 -left-20 opacity-20" style={{ background: "var(--color-gold)" }} />
+        <div className="blob w-96 h-96 bottom-0 right-0 opacity-15" style={{ background: "var(--color-crimson)" }} />
+        <div className="blob w-60 h-60 top-1/2 left-1/2 opacity-10" style={{ background: "var(--color-emerald)" }} />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           {/* photo + badge */}
@@ -385,24 +392,25 @@ export default function Home() {
             className="relative inline-block mb-8"
           >
             <div
-              className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 mx-auto"
-              style={{ borderColor: "var(--color-warm-orange)", boxShadow: "6px 8px 0 rgba(249,115,22,0.2)" }}
+              className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 mx-auto wand-glow"
+              style={{ borderColor: "var(--color-gold)", boxShadow: "0 0 30px rgba(201,168,76,0.15)" }}
             >
-              <img src="/hero.png" alt="Alish" className="w-full h-full object-cover scale-125 origin-top" />
+              <img src="/OIP.webp" alt="The Order" className="w-full h-full object-cover" />
             </div>
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -top-4 -right-4 text-3xl"
+              style={{ filter: "drop-shadow(0 0 8px rgba(201,168,76,0.4))" }}
             >
-              👋
+              ⚡
             </motion.div>
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               className="absolute -bottom-3 -left-4 text-2xl"
             >
-              ✨
+              ☽
             </motion.div>
           </motion.div>
 
@@ -414,7 +422,7 @@ export default function Home() {
             className="text-lg mb-3"
             style={{ fontFamily: "var(--font-hand)", color: "var(--color-muted)", fontSize: "1.3rem" }}
           >
-            hey there, I'm
+            I solemnly swear that I am up to no good...
           </motion.p>
 
           {/* name */}
@@ -431,7 +439,7 @@ export default function Home() {
             }}
           >
             Alish
-            <span style={{ color: "var(--color-warm-orange)" }}>.</span>
+            <span style={{ color: "var(--color-gold)" }}>.</span>
           </motion.h1>
 
           {/* tagline */}
@@ -442,9 +450,9 @@ export default function Home() {
             className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed"
             style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
           >
-            I <Mark color="#f97316">build things for the internet</Mark> and get way too excited
-            about ideas at 2am. Sometimes they're brilliant. Sometimes they're not.{" "}
-            <Mark color="#facc15">Always worth trying.</Mark>
+            I <Mark color="#c9a84c">craft forbidden spells in code</Mark> and trade in
+            rare anime artifacts after midnight. My letter from Hogwarts got lost,{" "}
+            <Mark color="#8b0000">so I built my own wizarding world.</Mark>
           </motion.p>
 
           {/* scroll hint */}
@@ -454,13 +462,14 @@ export default function Home() {
             transition={{ delay: 1.2 }}
             className="mt-16 flex flex-col items-center gap-2"
           >
-            <span style={{ fontFamily: "var(--font-hand)", color: "var(--color-muted)", fontSize: "1.1rem" }}>
-              scroll to know me better
+            <span style={{ fontFamily: "var(--font-hand)", color: "var(--color-gold-dim)", fontSize: "1.1rem" }}>
+              unroll the scroll
             </span>
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 1.2, repeat: Infinity }}
               className="text-2xl"
+              style={{ color: "var(--color-gold-dim)" }}
             >
               ↓
             </motion.div>
@@ -489,11 +498,11 @@ export default function Home() {
             className="text-3xl md:text-4xl font-black mb-6"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
           >
-            The short story
+            The Classified Dossier
             <span
-              style={{ fontFamily: "var(--font-hand)", color: "var(--color-warm-orange)", fontSize: "2rem", marginLeft: "8px" }}
+              style={{ fontFamily: "var(--font-hand)", color: "var(--color-gold)", fontSize: "2rem", marginLeft: "8px" }}
             >
-              (the fun version)
+              (ministry-approved)
             </span>
           </h2>
 
@@ -502,19 +511,17 @@ export default function Home() {
             style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
           >
             <p>
-              I'm Alish — just a regular guy from India who somehow ended up being a <Mark color="#f97316"><span className="glitch-text" data-text="creator, tinkerer, and aggressive overthinker">creator, tinkerer, and aggressive overthinker</span></Mark>. I got into building things for the web because I couldn't find what I wanted to see, so I just… decided to make it myself.
+              I&apos;m Alish — a <Mark color="#c9a84c">self-taught wizard of the digital arts</Mark> operating from an undisclosed location in India. My Hogwarts letter never came, so I taught myself the dark arts of web development, reverse-engineered every anime opening I could find, and started building things that probably shouldn&apos;t exist.
             </p>
             <p>
-              I care a lot about how things{" "}
-              <Mark color="#86efac">feel</Mark> — not just how they work. That push you get when
-              a button presses satisfyingly, the way a page should breathe as you scroll — I
-              obsess over all of it.
+              I care deeply about how things{" "}
+              <Mark color="#4a7c59">feel</Mark> — every scroll, every hover, every transition is a spell. If a page doesn&apos;t give you chills, the incantation is incomplete.
             </p>
             <p>
-              When I'm not staring at a screen, I'm probably surviving on an unhealthy amount of <Mark color="#f97316">Maggi</Mark>, out playing <Mark color="#86efac">football</Mark> or <Mark color="#93c5fd">cricket</Mark>, or casually trying to wrap my head around insanely dense <Mark color="#facc15">scientific theories</Mark>. Oh, and my YouTube algorithm is a completely <span className="glitch-text" data-text="chaotic mix of astrophysics and anime">chaotic mix of astrophysics and anime</span>.
+              When I&apos;m not conjuring code, I&apos;m surviving on <Mark color="#c9a84c">midnight Maggi rituals</Mark>, playing <Mark color="#4a7c59">football</Mark> or <Mark color="#4a6fa5">cricket</Mark> under suspicious circumstances, or decoding <Mark color="#6b4c9a">forbidden scientific scrolls</Mark>. My YouTube algorithm? A <Mark color="#8b0000">cursed pipeline of astrophysics and anime</Mark> that the Ministry would definitely investigate.
             </p>
-            <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.25rem", color: "var(--color-ink)" }}>
-              Basically: curious by nature, creative by choice, and caffeinated by necessity. ☕
+            <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.25rem", color: "var(--color-gold)" }}>
+              Mischief managed. ⚡
             </p>
           </div>
         </motion.div>
@@ -522,9 +529,9 @@ export default function Home() {
 
       {/* ===== BANNER 1 ===== */}
       <Banner
-        text="currently obsessing over — space   good coffee   clean interfaces   rabbit holes"
-        bg="var(--color-warm-yellow)"
-        textColor="var(--color-ink)"
+        text="solemnly swearing ⚡ mischief managed ✦ accio code ◈ expecto patronum ☽ nox"
+        bg="var(--color-gold)"
+        textColor="var(--color-bg)"
       />
 
       {/* ===== THINGS I DO ===== */}
@@ -540,59 +547,59 @@ export default function Home() {
             className="text-4xl md:text-6xl font-black mb-4"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
           >
-            What I actually do
+            Known Abilities
           </h2>
           <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.2rem", color: "var(--color-muted)" }}>
-            (without the boring buzzwords)
+            (O.W.L. results pending)
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <FactCard
-            emoji="🎨"
-            title="Make things look alive"
-            desc="I care deeply about motion, rhythm, and the feeling a screen gives you. If it doesn't feel magical, I'm not done yet."
-            accent="var(--color-warm-pink)"
+            emoji="🪄"
+            title="Cast spells in code"
+            desc="Every line of code is an incantation. I craft interfaces that feel like stepping through Platform 9¾ — impossible until you believe."
+            accent="var(--color-gold)"
             rotate={-1.5}
             delay={0}
           />
           <FactCard
-            emoji="🧠"
-            title="Connect the dots"
-            desc="I have a weird brain that links ideas across different worlds — whether that's physics, design, storytelling, or software."
-            accent="var(--color-warm-purple)"
+            emoji="🧙"
+            title="Operate from the shadows"
+            desc="Like any good Slytherin, I work best when nobody's watching. My best ideas surface between midnight and dawn, fueled by forbidden knowledge."
+            accent="var(--color-emerald)"
             rotate={1}
             delay={0.1}
           />
           <FactCard
-            emoji="🛠️"
-            title="Build from scratch"
-            desc="Templates are fine but starting from a blank canvas is where the magic happens. I love building things that didn't exist before."
-            accent="var(--color-warm-orange)"
+            emoji="📜"
+            title="Collect forbidden scrolls"
+            desc="From obscure anime lore to quantum physics papers — my library would make Dumbledore nervous. Knowledge is the ultimate Horcrux."
+            accent="var(--color-crimson)"
             rotate={-1}
             delay={0.2}
           />
           <FactCard
-            emoji="📚"
-            title="Read & absorb"
-            desc="From philosophy to astrophysics to UX theory — I'm always reading something. Knowledge is the most fun thing to collect."
-            accent="var(--color-warm-blue)"
+            emoji="⚗️"
+            title="Brew potions (in JS)"
+            desc="I mix frameworks, libraries, and sheer audacity into concoctions that shouldn't work — but somehow always do. Snape would be proud."
+            accent="var(--color-warm-purple)"
             rotate={1.5}
             delay={0.3}
           />
           <FactCard
             emoji="🌙"
-            title="Think at 2am"
-            desc="Some of my best ideas come at completely unreasonable hours. I've learned to keep notes because morning-me forgets everything."
-            accent="var(--color-warm-yellow)"
+            title="Guard the night watch"
+            desc="My most powerful spells are cast at 2AM. The Marauder's Map shows me at my desk, surrounded by empty Maggi packets and open tabs."
+            accent="var(--color-gold-dim)"
             rotate={-0.5}
             delay={0.4}
           />
           <FactCard
-            emoji="🚀"
-            title="Ship things"
-            desc="I believe a good idea sitting in Notion is just a sad idea. If I'm excited about something, I build it and put it out there."
-            accent="var(--color-warm-green)"
+            emoji="⚡"
+            title="Deliver the prophecy"
+            desc="Every project is a Horcrux — a piece of my soul shipped into the world. I build things that make people stop and whisper 'how?'"
+            accent="var(--color-warm-blue)"
             rotate={2}
             delay={0.5}
           />
@@ -612,32 +619,32 @@ export default function Home() {
             className="text-3xl md:text-5xl font-black mb-4"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
           >
-            Things I love
+            Known Obsessions
           </h2>
           <p
             className="mb-10"
             style={{ fontFamily: "var(--font-hand)", color: "var(--color-muted)", fontSize: "1.15rem" }}
           >
-            ask me about any of these and I'll talk for hours
+            mention any of these and I&apos;ll monologue like a villain
           </p>
 
           <div className="flex flex-wrap gap-3 justify-center">
             {[
-              { label: "🌌 Space & Astrophysics", color: "#93c5fd" },
-              { label: "🎌 Anime & Manga", color: "#f9a8d4" },
-              { label: "🍜 Eating Maggi", color: "#f97316" },
-              { label: "⚽ Football", color: "#86efac" },
-              { label: "🏏 Cricket", color: "#93c5fd" },
-              { label: "🔬 Scientific Theories", color: "#c4b5fd" },
-              { label: "🎵 Indie & Lo-fi", color: "#c4b5fd" },
-              { label: "🔭 Orbital Mechanics", color: "#86efac" },
-              { label: "📖 Philosophy", color: "#facc15" },
-              { label: "🎮 Game Design Theory", color: "#fca5a5" },
-              { label: "🌿 Slow mornings", color: "#86efac" },
-              { label: "🧩 Puzzles & Patterns", color: "#93c5fd" },
-              { label: "🎨 Type & Color Theory", color: "#f9a8d4" },
-              { label: "🌙 Late-night ideas", color: "#c4b5fd" },
-              { label: "📡 Science fiction", color: "#fca5a5" },
+              { label: "⚡ Harry Potter Lore", color: "#c9a84c" },
+              { label: "🎌 Anime & Manga", color: "#8b0000" },
+              { label: "🍜 Midnight Maggi Rituals", color: "#c9a84c" },
+              { label: "⚽ Football (Quidditch substitute)", color: "#4a7c59" },
+              { label: "🏏 Cricket", color: "#4a6fa5" },
+              { label: "📜 Forbidden Scientific Scrolls", color: "#6b4c9a" },
+              { label: "🎵 Dark Academia Lo-fi", color: "#7b8794" },
+              { label: "🔭 Astrophysics & Dark Matter", color: "#4a6fa5" },
+              { label: "🧙 Dumbledore's Army", color: "#4a7c59" },
+              { label: "🐍 Slytherin Ambitions", color: "#2d6a4f" },
+              { label: "📖 Philosophy of Magic", color: "#c9a84c" },
+              { label: "🗡️ Anime Villain Monologues", color: "#8b0000" },
+              { label: "☽ Late-night Conspiracies", color: "#6b4c9a" },
+              { label: "🪄 Wand Theory", color: "#c9a84c" },
+              { label: "📡 Sci-fi & Isekai", color: "#7b8794" },
             ].map((p, i) => (
               <Pill key={i} color={p.color} delay={i * 0.04}>
                 {p.label}
@@ -649,9 +656,9 @@ export default function Home() {
 
       {/* ===== BANNER 2 ===== */}
       <Banner
-        text="I make stuff ✦ I break stuff ✦ I fix stuff ✦ I ship stuff ✦ I repeat"
-        bg="var(--color-warm-coral)"
-        textColor="#fff"
+        text="I conjure ✦ I curse ✦ I debug ✦ I deploy ✦ Mischief Managed"
+        bg="var(--color-crimson)"
+        textColor="var(--color-ink)"
       />
 
       {/* ===== ORIGIN STORY TIMELINE ===== */}
@@ -667,51 +674,51 @@ export default function Home() {
             className="text-4xl md:text-5xl font-black mb-3"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
           >
-            How I got here
+            The Origin Arc
           </h2>
           <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.2rem", color: "var(--color-muted)" }}>
-            my (very honest) origin story
+            how the chosen one was forged
           </p>
         </motion.div>
 
         <div>
           <TimelineEntry
-            year="Age 10"
-            emoji="🖥️"
-            title="First encounter with a computer"
-            desc="Dad let me use his PC. I immediately broke the screensaver settings. Was very proud of this achievement."
+            year="Year One"
+            emoji="⚡"
+            title="Found a cursed computer"
+            desc="Dad's PC. I touched the forbidden device. Immediately broke something. The sorting hat placed me in Slytherin that day."
             delay={0}
             alignRight={false}
           />
           <TimelineEntry
-            year="A bit later"
-            emoji="🎮"
-            title="Became obsessed with 'how things work'"
-            desc="Spent more time in game menus than actually playing. Always curious about what was happening behind the scenes."
+            year="The Awakening"
+            emoji="👓"
+            title="Discovered anime & the hidden world"
+            desc="Stumbled into Naruto, then Death Note, then the entire anime multiverse. My YouTube history became classified information."
             delay={0.1}
             alignRight={true}
           />
           <TimelineEntry
-            year="The big click"
-            emoji="💡"
-            title="Discovered I could build things"
-            desc="Made my first clumsy webpage. It was terrible. But it was mine — and that feeling was completely addictive."
+            year="The Unbreakable Vow"
+            emoji="🪄"
+            title="Cast my first spell (wrote my first code)"
+            desc="Made a webpage so ugly it could've been a Howler. But it was mine — and that feeling? Pure Felix Felicis."
             delay={0.2}
             alignRight={false}
           />
           <TimelineEntry
-            year="Down the rabbit hole"
-            emoji="🌀"
-            title="Learned by doing (and by breaking things)"
-            desc="Tutorials, YouTube, trial and error, Stack Overflow at midnight. The classic curriculum of every self-taught creator."
+            year="The Forbidden Section"
+            emoji="📜"
+            title="Went deep into the dark arts"
+            desc="React, Three.js, forbidden Stack Overflow threads at 3AM. The restricted section of the internet became my classroom."
             delay={0.3}
             alignRight={true}
           />
           <TimelineEntry
-            year="Now"
-            emoji="🌟"
-            title="Building things I'm actually proud of"
-            desc="Every project teaches me something. The goal is always to make something that someone else looks at and says — wait, how did they do that?"
+            year="Present Day"
+            emoji="💀"
+            title="The Dark Lord of Side Projects"
+            desc="Every project is a Horcrux — a piece of my soul shipped into the world. The prophecy is being fulfilled, one commit at a time."
             delay={0.4}
             alignRight={false}
           />
@@ -730,53 +737,55 @@ export default function Home() {
           className="fun-card p-10 md:p-16 text-center relative overflow-hidden"
         >
           {/* blobs inside card */}
-          <div className="blob w-48 h-48 -top-8 -right-8 opacity-30" style={{ background: "var(--color-warm-yellow)" }} />
-          <div className="blob w-40 h-40 -bottom-8 -left-8 opacity-30" style={{ background: "var(--color-warm-pink)" }} />
+          <div className="blob w-48 h-48 -top-8 -right-8 opacity-15" style={{ background: "var(--color-gold)" }} />
+          <div className="blob w-40 h-40 -bottom-8 -left-8 opacity-15" style={{ background: "var(--color-crimson)" }} />
 
           <div className="relative z-10">
             <motion.div
               animate={{ rotate: [0, 15, -15, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="text-5xl mb-6"
+              style={{ filter: "drop-shadow(0 0 12px rgba(201,168,76,0.3))" }}
             >
-              👾
+              ⚡
             </motion.div>
             <h2
               className="text-4xl md:text-6xl font-black mb-5 leading-tight"
               style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
             >
-              Let's make something
+              Send an owl
               <br />
-              <span style={{ color: "var(--color-warm-orange)" }}>worth talking about.</span>
+              <span style={{ color: "var(--color-gold)" }}>or a Patronus.</span>
             </h2>
             <p
               className="text-lg mb-10 max-w-xl mx-auto"
               style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
             >
-              Whether you have a wild idea, a collaboration in mind, or just want to talk about
-              the best anime of the last decade — my door is open.
+              Whether you have a forbidden collaboration in mind, want to debate
+              the best anime villain, or just need someone for your Dumbledore&apos;s Army — I&apos;m in.
             </p>
 
             <motion.a
               href="https://portfolio-galaxy-five.vercel.app/"
               whileHover={{ scale: 1.05, y: -3 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full font-black text-lg text-white shadow-lg"
+              className="inline-flex items-center gap-3 px-10 py-4 rounded-sm font-black text-lg shadow-lg"
               style={{
-                background: "linear-gradient(135deg, var(--color-warm-orange), #fb923c)",
-                boxShadow: "0 6px 30px rgba(249,115,22,0.35)",
+                background: "linear-gradient(135deg, var(--color-gold), #8b7535)",
+                color: "var(--color-bg)",
+                boxShadow: "0 6px 30px rgba(201,168,76,0.25)",
                 fontFamily: "var(--font-body)",
                 textDecoration: "none",
               }}
             >
-              Say hello ✦
+              Accio Connection ✦
             </motion.a>
 
             <p
               className="mt-6 text-sm"
               style={{ fontFamily: "var(--font-hand)", color: "var(--color-muted)", fontSize: "1rem" }}
             >
-              I respond quickly and I'm genuinely excited to hear from you 🙂
+              my owl responds quickly. no Howlers, I promise 🦉
             </p>
           </div>
         </motion.div>

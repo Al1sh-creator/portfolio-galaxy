@@ -37,7 +37,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${nunito.variable} ${caveat.variable} antialiased`}
     >
       <body
-        className="min-h-screen selection:bg-orange-200 selection:text-orange-900"
+        className="min-h-screen selection:bg-amber-900/30 selection:text-amber-200"
         style={{ fontFamily: "var(--font-nunito, Nunito, sans-serif)" }}
       >
         {children}
