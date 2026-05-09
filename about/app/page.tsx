@@ -3,55 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Lenis from "lenis";
+import MagicDuelCanvas from "../components/MagicDuelCanvas";
 
-// ---- FLOATING RUNES ----
-const RUNES = ["⚡", "✦", "◈", "☽", "△", "✧", "⊹", "☆", "⍟"];
-const FloatingDots = () => {
-  const [dots, setDots] = useState<any[]>([]);
-  useEffect(() => {
-    setDots(
-      Array.from({ length: 22 }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: Math.random() * 10 + 8,
-        color: [
-          "var(--color-gold)",
-          "var(--color-gold-dim)",
-          "var(--color-crimson)",
-          "var(--color-emerald)",
-          "var(--color-silver)",
-        ][Math.floor(Math.random() * 5)],
-        dur: Math.random() * 6 + 6,
-        del: Math.random() * 5,
-        char: RUNES[Math.floor(Math.random() * RUNES.length)],
-      }))
-    );
-  }, []);
-  return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {dots.map((d) => (
-        <span
-          key={d.id}
-          className="absolute select-none font-bold"
-          style={{
-            left: `${d.left}%`,
-            top: `${d.top}%`,
-            fontSize: d.size,
-            color: d.color,
-            animationName: "float-slow",
-            animationDuration: `${d.dur}s`,
-            animationDelay: `${d.del}s`,
-            animationIterationCount: "infinite",
-            animationTimingFunction: "ease-in-out",
-          }}
-        >
-          {d.char}
-        </span>
-      ))}
-    </div>
-  );
-};
+// Removed FloatingDots to rely on MagicDuelCanvas
 
 // ---- STICKY HEADER ----
 const Nav = () => {
@@ -373,15 +327,15 @@ export default function Home() {
     >
       <OrbitalCursor />
       <BrainwaveProgress />
-      <FloatingDots />
+      <MagicDuelCanvas />
       <Nav />
 
       {/* ===== HERO ===== */}
       <section className="relative w-full min-h-screen flex items-center justify-center px-6 pt-24">
         {/* background blobs */}
-        <div className="blob w-80 h-80 top-10 -left-20 opacity-20" style={{ background: "var(--color-gold)" }} />
-        <div className="blob w-96 h-96 bottom-0 right-0 opacity-15" style={{ background: "var(--color-crimson)" }} />
-        <div className="blob w-60 h-60 top-1/2 left-1/2 opacity-10" style={{ background: "var(--color-emerald)" }} />
+        <div className="blob w-80 h-80 top-10 -left-20 opacity-[0.03]" style={{ background: "var(--color-warm-green)" }} />
+        <div className="blob w-96 h-96 bottom-0 right-0 opacity-[0.03]" style={{ background: "var(--color-warm-blue)" }} />
+        <div className="blob w-60 h-60 top-1/2 left-1/2 opacity-[0.02]" style={{ background: "var(--color-silver)" }} />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           {/* photo + badge */}
@@ -392,8 +346,12 @@ export default function Home() {
             className="relative inline-block mb-8"
           >
             <div
-              className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 mx-auto wand-glow"
-              style={{ borderColor: "var(--color-gold)", boxShadow: "0 0 30px rgba(201,168,76,0.15)" }}
+              className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 mx-auto"
+              style={{ 
+                borderColor: "var(--color-ink)", 
+                boxShadow: "0 0 50px rgba(34,197,94,0.3), inset 0 0 30px rgba(59,130,246,0.5)",
+                filter: "drop-shadow(0 0 20px rgba(255,255,255,0.2))"
+              }}
             >
               <img src="/OIP.webp" alt="The Order" className="w-full h-full object-cover" />
             </div>
@@ -436,10 +394,11 @@ export default function Home() {
               fontSize: "clamp(4rem, 14vw, 9rem)",
               color: "var(--color-ink)",
               letterSpacing: "-0.02em",
+              textShadow: "0 0 40px rgba(255,255,255,0.15), 0 0 80px rgba(34,197,94,0.1)",
             }}
           >
             Alish
-            <span style={{ color: "var(--color-gold)" }}>.</span>
+            <span style={{ color: "var(--color-gold)", textShadow: "0 0 20px var(--color-gold)" }}>.</span>
           </motion.h1>
 
           {/* tagline */}
@@ -448,11 +407,11 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             className="text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed"
-            style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
+            style={{ color: "var(--color-silver)", fontFamily: "var(--font-body)" }}
           >
-            I <Mark color="#c9a84c">craft forbidden spells in code</Mark> and trade in
+            I <Mark color="var(--color-warm-green)">craft forbidden spells in code</Mark> and trade in
             rare anime artifacts after midnight. My letter from Hogwarts got lost,{" "}
-            <Mark color="#8b0000">so I built my own wizarding world.</Mark>
+            <Mark color="var(--color-warm-blue)">so I built my own wizarding world.</Mark>
           </motion.p>
 
           {/* scroll hint */}
@@ -495,7 +454,7 @@ export default function Home() {
           </div>
 
           <h2
-            className="text-3xl md:text-4xl font-black mb-6"
+            className="text-3xl md:text-4xl font-black mb-6 animate-text-glow"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
           >
             The Classified Dossier
@@ -511,14 +470,14 @@ export default function Home() {
             style={{ color: "var(--color-muted)", fontFamily: "var(--font-body)" }}
           >
             <p>
-              I&apos;m Alish — a <Mark color="#c9a84c">self-taught wizard of the digital arts</Mark> operating from an undisclosed location in India. My Hogwarts letter never came, so I taught myself the dark arts of web development, reverse-engineered every anime opening I could find, and started building things that probably shouldn&apos;t exist.
+              I&apos;m Alish — a <Mark color="var(--color-warm-green)">self-taught wizard of the digital arts</Mark> operating from an undisclosed location in India. My Hogwarts letter never came, so I taught myself the dark arts of web development, reverse-engineered every anime opening I could find, and started building things that probably shouldn&apos;t exist.
             </p>
             <p>
               I care deeply about how things{" "}
-              <Mark color="#4a7c59">feel</Mark> — every scroll, every hover, every transition is a spell. If a page doesn&apos;t give you chills, the incantation is incomplete.
+              <Mark color="var(--color-warm-green)">feel</Mark> — every scroll, every hover, every transition is a spell. If a page doesn&apos;t give you chills, the incantation is incomplete.
             </p>
             <p>
-              When I&apos;m not conjuring code, I&apos;m surviving on <Mark color="#c9a84c">midnight Maggi rituals</Mark>, playing <Mark color="#4a7c59">football</Mark> or <Mark color="#4a6fa5">cricket</Mark> under suspicious circumstances, or decoding <Mark color="#6b4c9a">forbidden scientific scrolls</Mark>. My YouTube algorithm? A <Mark color="#8b0000">cursed pipeline of astrophysics and anime</Mark> that the Ministry would definitely investigate.
+              When I&apos;m not conjuring code, I&apos;m surviving on <Mark color="var(--color-gold)">midnight Maggi rituals</Mark>, playing <Mark color="var(--color-warm-green)">football</Mark> or <Mark color="var(--color-warm-blue)">cricket</Mark> under suspicious circumstances, or decoding <Mark color="var(--color-warm-purple)">forbidden scientific scrolls</Mark>. My YouTube algorithm? A <Mark color="var(--color-crimson)">cursed pipeline of astrophysics and anime</Mark> that the Ministry would definitely investigate.
             </p>
             <p style={{ fontFamily: "var(--font-hand)", fontSize: "1.25rem", color: "var(--color-gold)" }}>
               Mischief managed. ⚡
