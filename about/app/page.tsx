@@ -125,7 +125,7 @@ const Mark = ({ children, color = "#c9a84c" }: { children: React.ReactNode; colo
   </span>
 );
 
-// ---- FACT CARD ----
+// ---- FACT CARD (3D GRIMOIRE) ----
 const FactCard = ({
   emoji,
   title,
@@ -146,28 +146,36 @@ const FactCard = ({
     whileInView={{ opacity: 1, y: 0, rotate }}
     viewport={{ once: true, margin: "-60px" }}
     transition={{ duration: 0.5, delay, ease: [0.34, 1.56, 0.64, 1] }}
-    whileHover={{ y: -6, rotate: rotate * 0.5, scale: 1.02 }}
-    className="fun-card p-6 md:p-8 flex flex-col gap-3 cursor-default select-none"
+    className="grimoire-card w-full h-[280px] md:h-[320px] cursor-default select-none"
   >
-    <div
-      className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-      style={{ background: accent + "22" }}
-    >
-      {emoji}
+    <div className="grimoire-inner">
+      {/* Front of the Card (Closed Book / Crest) */}
+      <div className="grimoire-front fun-card p-6 md:p-8 flex items-center justify-center border-2 border-[var(--color-silver)] opacity-80 bg-[rgba(10,15,25,0.8)]">
+        <div className="text-6xl opacity-30 animate-pulse" style={{ color: accent, filter: `drop-shadow(0 0 10px ${accent})` }}>
+          ✦
+        </div>
+        <div className="absolute inset-0 border-[4px] border-[var(--color-silver)] opacity-10 m-4 rounded-sm border-double"></div>
+      </div>
+
+      {/* Back of the Card (The Secret Content) */}
+      <div className="grimoire-back fun-card p-6 md:p-8 flex flex-col gap-3 justify-center items-center text-center">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-2"
+          style={{ background: accent + "22", border: `1px solid ${accent}44`, boxShadow: `0 0 20px ${accent}44` }}
+        >
+          {emoji}
+        </div>
+        <h3
+          className="text-xl md:text-2xl font-black leading-tight animate-text-glow"
+          style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+        >
+          {title}
+        </h3>
+        <p className="text-sm md:text-base leading-relaxed" style={{ color: "var(--color-muted)" }}>
+          {desc}
+        </p>
+      </div>
     </div>
-    <h3
-      className="text-xl font-black leading-tight"
-      style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
-    >
-      {title}
-    </h3>
-    <p className="text-sm leading-relaxed" style={{ color: "var(--color-muted)" }}>
-      {desc}
-    </p>
-    <div
-      className="w-8 h-1 rounded-full mt-auto"
-      style={{ background: accent }}
-    />
   </motion.div>
 );
 
@@ -262,7 +270,7 @@ const TimelineEntry = ({
 const DeskSandbox = () => {
   const constraintsRef = useRef(null);
   
-  const items = [
+    const items = [
     { emoji: "🍜", label: "Maggi", size: "text-6xl", top: "10%", left: "10%" },
     { emoji: "⚽", label: "Football", size: "text-5xl", top: "20%", left: "70%" },
     { emoji: "🏏", label: "Cricket", size: "text-5xl", top: "60%", left: "20%" },
@@ -272,6 +280,9 @@ const DeskSandbox = () => {
 
   return (
     <section className="relative w-full max-w-4xl mx-auto px-6 py-24 cursor-crosshair">
+      {/* Horcrux 2 */}
+      <Horcrux id="ring" onFind={handleFindHorcrux} found={foundHorcruxes.includes("ring")} className="top-10 right-10" />
+
       <div className="text-center mb-10">
         <h2 className="text-3xl md:text-5xl font-black mb-3" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
           My Desk
@@ -302,10 +313,56 @@ const DeskSandbox = () => {
       </motion.div>
     </section>
   );
+// ---- HORCRUX COMPONENT ----
+const Horcrux = ({ id, onFind, found, className }: { id: string, onFind: (id: string) => void, found: boolean, className: string }) => {
+  if (found) return null;
+  return (
+    <motion.div
+      whileHover={{ scale: 1.5, opacity: 1, filter: "drop-shadow(0 0 10px red)" }}
+      className={`absolute cursor-pointer opacity-10 transition-all z-50 text-sm ${className}`}
+      onClick={() => onFind(id)}
+      title="A strange, cursed object..."
+    >
+      {id === "diary" ? "📓" : id === "ring" ? "💍" : "🐍"}
+    </motion.div>
+  );
 };
 
 // ---- MAIN PAGE ----
 export default function Home() {
+  const [activeSpell, setActiveSpell] = useState<string | null>(null);
+  const [foundHorcruxes, setFoundHorcruxes] = useState<string[]>([]);
+
+  const handleFindHorcrux = (id: string) => {
+    if (!foundHorcruxes.includes(id)) {
+      setFoundHorcruxes((prev) => [...prev, id]);
+    }
+  };
+
+  useEffect(() => {
+    let buffer = "";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      buffer += e.key.toLowerCase();
+      if (buffer.length > 10) buffer = buffer.slice(-10);
+
+      if (buffer.includes("lumos")) {
+        setActiveSpell("lumos");
+        buffer = "";
+        setTimeout(() => setActiveSpell(null), 3000);
+      } else if (buffer.includes("avada")) {
+        setActiveSpell("avada");
+        buffer = "";
+        setTimeout(() => setActiveSpell(null), 3000);
+      } else if (buffer.includes("nox")) {
+        setActiveSpell("nox");
+        buffer = "";
+        setTimeout(() => setActiveSpell(null), 3000);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 0.9,
@@ -330,8 +387,67 @@ export default function Home() {
       <MagicDuelCanvas />
       <Nav />
 
+      {/* SPELL OVERLAYS */}
+      <AnimatePresence>
+        {activeSpell === "lumos" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 3, ease: "easeOut" }}
+            className="fixed inset-0 z-[999] pointer-events-none bg-white mix-blend-overlay"
+          />
+        )}
+        {activeSpell === "avada" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 3, ease: "easeOut" }}
+            className="fixed inset-0 z-[999] pointer-events-none bg-green-500 mix-blend-color"
+          />
+        )}
+        {activeSpell === "nox" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 3, ease: "easeOut" }}
+            className="fixed inset-0 z-[999] pointer-events-none bg-black"
+          />
+        )}
+        {foundHorcruxes.length === 3 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black bg-opacity-95 pointer-events-auto"
+          >
+            <h1 className="text-red-600 text-6xl font-black mb-4 animate-pulse" style={{ fontFamily: "var(--font-display)", textShadow: "0 0 30px red" }}>
+              THE DARK LORD RETURNS
+            </h1>
+            <p className="text-gray-400 text-xl font-mono mb-8">You found all the cursed fragments.</p>
+            <button 
+              onClick={() => setFoundHorcruxes([])}
+              className="px-6 py-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-black transition-colors rounded-sm font-bold"
+            >
+              Obliviate
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* HORCRUX HUD */}
+      {foundHorcruxes.length > 0 && foundHorcruxes.length < 3 && (
+        <div className="fixed top-20 right-6 z-50 text-red-500 font-mono text-sm opacity-50">
+          Cursed fragments: {foundHorcruxes.length}/3
+        </div>
+      )}
+
       {/* ===== HERO ===== */}
       <section className="relative w-full min-h-screen flex items-center justify-center px-6 pt-24">
+        {/* Horcrux 1 */}
+        <Horcrux id="diary" onFind={handleFindHorcrux} found={foundHorcruxes.includes("diary")} className="top-32 left-10" />
+
         {/* background blobs */}
         <div className="blob w-80 h-80 top-10 -left-20 opacity-[0.03]" style={{ background: "var(--color-warm-green)" }} />
         <div className="blob w-96 h-96 bottom-0 right-0 opacity-[0.03]" style={{ background: "var(--color-warm-blue)" }} />
@@ -495,6 +611,9 @@ export default function Home() {
 
       {/* ===== THINGS I DO ===== */}
       <section className="relative w-full max-w-5xl mx-auto px-6 pb-24">
+        {/* Horcrux 2 */}
+        <Horcrux id="ring" onFind={handleFindHorcrux} found={foundHorcruxes.includes("ring")} className="-top-10 right-20" />
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -567,6 +686,9 @@ export default function Home() {
 
       {/* ===== INTERESTS / PILLS ===== */}
       <section className="relative w-full max-w-4xl mx-auto px-6 pb-24">
+        {/* Horcrux 3 */}
+        <Horcrux id="snake" onFind={handleFindHorcrux} found={foundHorcruxes.includes("snake")} className="-bottom-10 right-1/4" />
+
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

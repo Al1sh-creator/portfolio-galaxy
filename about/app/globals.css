@@ -68,6 +68,31 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+/* ---- 3D Grimoire Cards ---- */
+.grimoire-card {
+  background: transparent;
+  perspective: 1000px;
+}
+.grimoire-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+.grimoire-card:hover .grimoire-inner {
+  transform: rotateY(180deg);
+}
+.grimoire-front, .grimoire-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.grimoire-back {
+  transform: rotateY(180deg);
+}
+
 /* ---- Floating animations ---- */
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.15; }
