@@ -313,6 +313,8 @@ const DeskSandbox = () => {
       </motion.div>
     </section>
   );
+};
+
 // ---- HORCRUX COMPONENT ----
 const Horcrux = ({ id, onFind, found, className }: { id: string, onFind: (id: string) => void, found: boolean, className: string }) => {
   if (found) return null;
