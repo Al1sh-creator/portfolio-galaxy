@@ -176,13 +176,13 @@ export default function MagicDuelCanvas() {
     const animate = () => {
       time++;
       
-      // Deep abyss background with slight motion blur
-      ctx.fillStyle = "rgba(2, 4, 10, 0.3)";
+      // Deep abyss background with heavier fade to keep text readable
+      ctx.fillStyle = "rgba(2, 4, 10, 0.4)";
       ctx.fillRect(0, 0, width, height);
 
-      // Flash effect on impact shifts
-      if (Math.random() > 0.95) {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+      // Flash effect on impact shifts (reduced frequency and opacity)
+      if (Math.random() > 0.98) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
         ctx.fillRect(0, 0, width, height);
       }
 
@@ -199,14 +199,15 @@ export default function MagicDuelCanvas() {
       }
       collisionOffset += (collisionTarget - collisionOffset) * 0.08;
 
+      // Push the duel slightly lower so it doesn't block the main Hero text
       const originVoldemortX = 0;
-      const originVoldemortY = height * 0.4; // Slightly lower
+      const originVoldemortY = height * 0.6; 
       
       const originDumbledoreX = width;
-      const originDumbledoreY = height * 0.6; // Slightly higher
+      const originDumbledoreY = height * 0.8; 
 
       const collisionX = width / 2 + collisionOffset;
-      const collisionY = height / 2 + Math.sin(time * 0.1) * 50;
+      const collisionY = height * 0.65 + Math.sin(time * 0.1) * 30;
 
       // Draw Voldemort's Beam
       drawEnergyBeam(originVoldemortX, originVoldemortY, collisionX, collisionY, true);
@@ -265,10 +266,14 @@ export default function MagicDuelCanvas() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-0"
-      style={{ opacity: 0.95 }}
-    />
+    <div className="fixed inset-0 pointer-events-none z-0">
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full"
+        style={{ opacity: 0.4 }}
+      />
+      {/* Dark vignette to protect text legibility at edges and center */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(2,4,10,0.8)_80%)]"></div>
+    </div>
   );
 }
