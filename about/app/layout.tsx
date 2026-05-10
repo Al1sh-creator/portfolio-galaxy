@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Fraunces, Nunito, Caveat } from "next/font/google";
+import { Playfair_Display, Inter, Caveat } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-fraunces",
-  weight: ["300", "700", "900"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "700", "900"],
   style: ["normal", "italic"],
 });
 
-const nunito = Nunito({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-nunito",
-  weight: ["400", "600", "700", "900"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const caveat = Caveat({
@@ -23,7 +23,7 @@ const caveat = Caveat({
 
 export const metadata: Metadata = {
   title: "Alish — About Me",
-  description: "The fun version of my story. Builder, tinkerer, and enthusiastic overthinker.",
+  description: "The premium cinematic story. Builder, tinkerer, and enthusiastic overthinker.",
 };
 
 export default function RootLayout({
@@ -34,11 +34,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${nunito.variable} ${caveat.variable} antialiased`}
+      className={`${playfair.variable} ${inter.variable} ${caveat.variable} antialiased`}
     >
       <body
-        className="min-h-screen selection:bg-amber-900/30 selection:text-amber-200"
-        style={{ fontFamily: "var(--font-nunito, Nunito, sans-serif)" }}
+        className="min-h-screen selection:bg-amber-900/30 selection:text-amber-200 film-grain"
+        style={{ fontFamily: "var(--font-inter, sans-serif)" }}
       >
         {children}
       </body>

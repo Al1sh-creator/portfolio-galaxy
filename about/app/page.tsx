@@ -293,9 +293,18 @@ const DeskSandbox = ({ onFindHorcrux, foundHorcruxes }: { onFindHorcrux: (id: st
       </div>
       <motion.div 
         ref={constraintsRef} 
-        className="w-full h-80 md:h-96 rounded-3xl border-4 overflow-hidden relative manga-lines"
-        style={{ borderColor: "var(--color-ink)", backgroundColor: "var(--color-bg)", boxShadow: "inset 0 0 20px rgba(0,0,0,0.05)" }}
+        className="w-full h-80 md:h-96 rounded-[3rem] overflow-hidden relative mx-auto cursor-crosshair"
+        style={{ 
+          maxWidth: '800px',
+          borderColor: "rgba(255, 255, 255, 0.05)", 
+          borderWidth: '2px',
+          background: "radial-gradient(ellipse at center, rgba(30, 58, 138, 0.15) 0%, rgba(2, 4, 10, 0.6) 70%)", 
+          boxShadow: "0 20px 60px rgba(0,0,0,0.8), inset 0 0 80px rgba(30, 58, 138, 0.3), inset 0 0 20px rgba(255,255,255,0.05)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+        }}
       >
+        <div className="absolute inset-0 opacity-30 mix-blend-overlay pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noise%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.015%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/%3E%3C/svg%3E')" }}></div>
         {items.map((item, i) => (
           <motion.div
             key={i}
@@ -365,6 +374,22 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Lumos tracking for cards
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const cards = document.querySelectorAll(".fun-card, .manga-panel");
+      for (const card of cards) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        (card as HTMLElement).style.setProperty("--mouse-x", `${x}px`);
+        (card as HTMLElement).style.setProperty("--mouse-y", `${y}px`);
+      }
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   useEffect(() => {
     const lenis = new Lenis({
       duration: 0.9,
@@ -424,10 +449,10 @@ export default function Home() {
             animate={{ opacity: 1 }}
             className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black bg-opacity-95 pointer-events-auto"
           >
-            <h1 className="text-red-600 text-6xl font-black mb-4 animate-pulse" style={{ fontFamily: "var(--font-display)", textShadow: "0 0 30px red" }}>
+            <h1 className="text-red-600 text-6xl md:text-8xl font-black mb-4 animate-pulse tracking-widest text-center" style={{ fontFamily: "var(--font-display)", textShadow: "0 0 50px rgba(220,38,38,0.8), 0 0 100px rgba(220,38,38,0.4)" }}>
               THE DARK LORD RETURNS
             </h1>
-            <p className="text-gray-400 text-xl font-mono mb-8">You found all the cursed fragments.</p>
+            <p className="text-red-400 text-xl md:text-2xl font-mono mb-12 tracking-widest uppercase">You found all the cursed fragments.</p>
             <button 
               onClick={() => setFoundHorcruxes([])}
               className="px-6 py-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-black transition-colors rounded-sm font-bold"
@@ -461,17 +486,43 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-            className="relative inline-block mb-8"
+            className="relative inline-flex items-center justify-center mb-12 w-64 h-64"
           >
+            {/* Celestial Rings */}
+            <motion.div 
+              animate={{ rotate: 360 }} 
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 rounded-full border border-[rgba(212,175,55,0.15)] border-t-[rgba(212,175,55,0.5)] border-b-[rgba(212,175,55,0.3)]"
+              style={{ boxShadow: "0 0 30px rgba(212,175,55,0.05)" }}
+            />
+            <motion.div 
+              animate={{ rotate: -360 }} 
+              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-4 rounded-full border border-[rgba(255,255,255,0.05)] border-l-[rgba(212,175,55,0.4)] border-r-[rgba(59,130,246,0.3)] border-dashed"
+            />
+            <motion.div 
+              animate={{ rotate: 360 }} 
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-8 rounded-full border-[0.5px] border-[rgba(212,175,55,0.2)] opacity-50 flex items-center justify-center"
+            >
+              {/* Fake runic symbols via text */}
+              <svg viewBox="0 0 100 100" className="w-full h-full animate-pulse opacity-30">
+                <path d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="none" id="circle" />
+                <text className="text-[8px] tracking-[4px]" fill="var(--color-gold)">
+                  <textPath href="#circle">✦ EXPECTO PATRONUM ✦ EXPELLIARMUS ✦ LUMOS MAXIMA ✦</textPath>
+                </text>
+              </svg>
+            </motion.div>
+
             <div
-              className="w-36 h-36 md:w-44 md:h-44 rounded-full overflow-hidden border-2 mx-auto"
+              className="relative w-36 h-36 md:w-40 md:h-40 rounded-full overflow-hidden z-10"
               style={{ 
-                borderColor: "var(--color-ink)", 
-                boxShadow: "0 0 50px rgba(34,197,94,0.3), inset 0 0 30px rgba(59,130,246,0.5)",
-                filter: "drop-shadow(0 0 20px rgba(255,255,255,0.2))"
+                boxShadow: "0 0 40px rgba(2,4,10,0.8), inset 0 0 20px rgba(212,175,55,0.3)",
+                border: "2px solid rgba(212,175,55,0.2)"
               }}
             >
-              <img src="/OIP.webp" alt="The Order" className="w-full h-full object-cover" />
+              <img src="/OIP.webp" alt="The Order" className="w-full h-full object-cover scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(2,4,10,0.8)] to-transparent mix-blend-overlay"></div>
             </div>
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
@@ -505,18 +556,16 @@ export default function Home() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.7, ease: [0.34, 1.56, 0.64, 1] }}
-            className="font-black leading-none mb-6"
+            transition={{ delay: 0.3, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+            className="font-black leading-none mb-6 gold-foil-text"
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(4rem, 14vw, 9rem)",
-              color: "var(--color-ink)",
+              fontSize: "clamp(4.5rem, 15vw, 10rem)",
               letterSpacing: "-0.02em",
-              textShadow: "0 0 40px rgba(255,255,255,0.15), 0 0 80px rgba(34,197,94,0.1)",
+              textShadow: "0 20px 40px rgba(0,0,0,0.5)",
             }}
           >
-            Alish
-            <span style={{ color: "var(--color-gold)", textShadow: "0 0 20px var(--color-gold)" }}>.</span>
+            Alish.
           </motion.h1>
 
           {/* tagline */}
